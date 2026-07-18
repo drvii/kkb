@@ -12,7 +12,7 @@ function emptySplit(): Split {
     items: [],
     people: [],
     assignments: {},
-    charges: { vat: 0, serviceCharge: 0 },
+    charges: { serviceCharge: 0 },
   };
 }
 

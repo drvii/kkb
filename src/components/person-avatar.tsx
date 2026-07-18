@@ -2,6 +2,7 @@ import type { Person } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const SIZES = {
+  xs: "size-5 text-[10px]",
   sm: "size-7 text-xs",
   md: "size-9 text-sm",
   lg: "size-12 text-base",

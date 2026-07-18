@@ -16,6 +16,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { TopBar } from "@/components/top-bar";
+import { AppShell } from "@/components/app-shell";
 import { PersonAvatar } from "@/components/person-avatar";
 import { useHistoryStore } from "@/lib/store/history";
 import { formatPeso } from "@/lib/money";
@@ -27,7 +28,7 @@ export default function HistoryPage() {
   const clear = useHistoryStore((s) => s.clear);
 
   return (
-    <div className="flex min-h-dvh flex-1 flex-col">
+    <AppShell>
       <TopBar />
 
       <main className="flex flex-1 flex-col gap-6 px-4 py-4 sm:px-6">
@@ -99,6 +100,6 @@ export default function HistoryPage() {
           </AlertDialog>
         )}
       </main>
-    </div>
+    </AppShell>
   );
 }

@@ -27,4 +27,4 @@ The link between a Unit and the one or more People sharing it. When multiple Peo
 _Avoid_: Split (reserved for the whole flow instance)
 
 **Receipt Charges**:
-VAT and service charge, entered as flat ₱ amounts on the Receipt (not itemized, not percentage-based) and split equally across every Person on the Split regardless of their Assignments. See ADR-0002.
+The service charge, entered as a flat ₱ amount on the Receipt (not itemized, not percentage-based) and split equally across every Person on the Split regardless of their Assignments. VAT is not tracked separately — Item prices are assumed VAT-inclusive, as is standard on PH receipts. See ADR-0002, ADR-0003.

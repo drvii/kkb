@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TopBar } from "@/components/top-bar";
+import { AppShell } from "@/components/app-shell";
 import { PersonBreakdown } from "@/components/person-breakdown";
 import { useHistoryStore } from "@/lib/store/history";
 import { formatPeso } from "@/lib/money";
@@ -31,7 +32,7 @@ export default function HistorySplitPage({ params }: { params: Promise<{ id: str
 
   if (!split) {
     return (
-      <div className="flex min-h-dvh flex-1 flex-col">
+      <AppShell>
         <TopBar />
         <main className="flex flex-1 flex-col items-center justify-center gap-4 px-6 text-center">
           <p className="text-muted-foreground">This split isn&apos;t saved on this device (anymore).</p>
@@ -39,12 +40,12 @@ export default function HistorySplitPage({ params }: { params: Promise<{ id: str
             Back to recent splits
           </Button>
         </main>
-      </div>
+      </AppShell>
     );
   }
 
   return (
-    <div className="flex min-h-dvh flex-1 flex-col">
+    <AppShell>
       <TopBar />
 
       <main className="flex flex-1 flex-col gap-6 px-4 py-4 sm:px-6">
@@ -83,12 +84,6 @@ export default function HistorySplitPage({ params }: { params: Promise<{ id: str
               <span>Subtotal</span>
               <span>{formatPeso(receiptSubtotal(split.items))}</span>
             </div>
-            {split.charges.vat > 0 && (
-              <div className="flex justify-between text-muted-foreground">
-                <span>VAT</span>
-                <span>{formatPeso(split.charges.vat)}</span>
-              </div>
-            )}
             {split.charges.serviceCharge > 0 && (
               <div className="flex justify-between text-muted-foreground">
                 <span>Service charge</span>
@@ -102,6 +97,6 @@ export default function HistorySplitPage({ params }: { params: Promise<{ id: str
           </CardContent>
         </Card>
       </main>
-    </div>
+    </AppShell>
   );
 }

@@ -39,11 +39,10 @@ export function unitShares(unit: Unit, assignments: Assignments): Record<string,
   return Object.fromEntries(people.map((personId) => [personId, share]));
 }
 
-/** Each person's rounded equal share of VAT + service charge. */
+/** Each person's rounded equal share of the service charge. */
 export function chargeShare(split: Split): number {
   if (split.people.length === 0) return 0;
-  const total = split.charges.vat + split.charges.serviceCharge;
-  return roundCentavos(total / split.people.length);
+  return roundCentavos(split.charges.serviceCharge / split.people.length);
 }
 
 export type PersonLineItem = {
@@ -85,7 +84,7 @@ export function receiptSubtotal(items: Item[]): number {
 }
 
 export function receiptGrandTotal(split: Split): number {
-  return roundCentavos(receiptSubtotal(split.items) + split.charges.vat + split.charges.serviceCharge);
+  return roundCentavos(receiptSubtotal(split.items) + split.charges.serviceCharge);
 }
 
 export function splitPeopleTotal(split: Split): number {

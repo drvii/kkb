@@ -13,7 +13,6 @@ export type Person = {
 };
 
 export type ReceiptCharges = {
-  vat: number;
   serviceCharge: number;
 };
 

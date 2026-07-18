@@ -5,14 +5,25 @@ import { useRouter } from "next/navigation";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { TopBar } from "@/components/top-bar";
 import { FlowStepper } from "@/components/flow-stepper";
+import { AppShell } from "@/components/app-shell";
 import { useDraftSplit } from "@/lib/store/draft-split";
 import { formatPeso } from "@/lib/money";
-import { receiptSubtotal } from "@/lib/split-math";
+import { receiptGrandTotal, receiptSubtotal } from "@/lib/split-math";
+
+const cellInput =
+  "h-8 border-none bg-transparent px-1.5 shadow-none focus-visible:ring-1 focus-visible:ring-ring";
+const cellInputNumeric = `${cellInput} font-mono`;
 
 export default function ReceiptPage() {
   const router = useRouter();
@@ -23,7 +34,7 @@ export default function ReceiptPage() {
   const setCharges = useDraftSplit((s) => s.setCharges);
 
   const [name, setName] = useState("");
-  const [quantity, setQuantity] = useState("1");
+  const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
 
   const parsedQuantity = Math.max(1, Math.floor(Number(quantity) || 1));
@@ -34,152 +45,189 @@ export default function ReceiptPage() {
     if (!canAdd) return;
     addItem({ name: name.trim(), quantity: parsedQuantity, totalPrice: parsedPrice });
     setName("");
-    setQuantity("1");
+    setQuantity("");
     setPrice("");
+  }
+
+  function handleAddKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAdd();
+    }
+  }
+
+  function handleAddRowBlur(e: React.FocusEvent<HTMLTableRowElement>) {
+    const next = e.relatedTarget as Node | null;
+    if (next && e.currentTarget.contains(next)) return;
+    if (canAdd) handleAdd();
   }
 
   const canContinue = split.items.length > 0;
 
   return (
-    <div className="flex min-h-dvh flex-1 flex-col">
+    <AppShell>
       <TopBar />
       <FlowStepper current={0} />
 
-      <main className="flex flex-1 flex-col gap-6 px-4 pb-28 sm:px-6">
+      <main className="flex flex-1 flex-col gap-4 px-4 pb-28 sm:px-6">
         <div>
           <h1 className="text-xl font-semibold">Build the receipt</h1>
-          <p className="text-sm text-muted-foreground">Add each line item from the receipt.</p>
+          <p className="text-sm text-muted-foreground">Add each line item, then the service charge if there is one.</p>
         </div>
 
-        {split.items.length > 0 && (
-          <ul className="flex flex-col gap-2">
-            {split.items.map((item) => (
-              <Card key={item.id}>
-                <CardContent className="flex items-center gap-3 py-3">
-                  <div className="flex flex-1 flex-col gap-1">
+        <div className="overflow-hidden rounded-lg border">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead>Item</TableHead>
+                <TableHead className="w-14 text-center">Qty</TableHead>
+                <TableHead className="w-24 text-right font-mono">Price</TableHead>
+                <TableHead className="w-9 p-0" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {split.items.map((item) => (
+                <TableRow key={item.id} className="hover:bg-transparent">
+                  <TableCell className="whitespace-normal p-1">
                     <Input
                       value={item.name}
                       onChange={(e) => updateItem(item.id, { name: e.target.value })}
-                      className="h-8 border-none px-0 font-medium shadow-none focus-visible:ring-0"
+                      className={cellInput}
                     />
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span>qty</span>
-                      <Input
-                        type="number"
-                        min={1}
-                        value={item.quantity}
-                        onChange={(e) =>
-                          updateItem(item.id, {
-                            quantity: Math.max(1, Math.floor(Number(e.target.value) || 1)),
-                          })
-                        }
-                        className="h-7 w-14 px-2"
-                      />
-                    </div>
-                  </div>
+                  </TableCell>
+                  <TableCell className="p-1">
+                    <Input
+                      type="number"
+                      min={1}
+                      value={item.quantity}
+                      onChange={(e) =>
+                        updateItem(item.id, {
+                          quantity: Math.max(1, Math.floor(Number(e.target.value) || 1)),
+                        })
+                      }
+                      className={`${cellInputNumeric} text-center`}
+                    />
+                  </TableCell>
+                  <TableCell className="p-1">
+                    <Input
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      value={item.totalPrice || ""}
+                      onChange={(e) => updateItem(item.id, { totalPrice: Number(e.target.value) || 0 })}
+                      className={`${cellInputNumeric} text-right`}
+                    />
+                  </TableCell>
+                  <TableCell className="p-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8"
+                      aria-label={`Remove ${item.name}`}
+                      onClick={() => removeItem(item.id)}
+                    >
+                      <Trash2 className="size-3.5 text-muted-foreground" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+
+              <TableRow className="hover:bg-transparent" onBlur={handleAddRowBlur}>
+                <TableCell className="p-1">
+                  <Input
+                    placeholder="Add item"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    onKeyDown={handleAddKeyDown}
+                    className={cellInput}
+                  />
+                </TableCell>
+                <TableCell className="p-1">
+                  <Input
+                    type="number"
+                    min={1}
+                    placeholder="1"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    onKeyDown={handleAddKeyDown}
+                    className={`${cellInputNumeric} text-center`}
+                  />
+                </TableCell>
+                <TableCell className="p-1">
                   <Input
                     type="number"
                     min={0}
                     step="0.01"
-                    value={item.totalPrice || ""}
-                    onChange={(e) => updateItem(item.id, { totalPrice: Number(e.target.value) || 0 })}
-                    className="h-8 w-24 text-right"
+                    placeholder="0.00"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    onKeyDown={handleAddKeyDown}
+                    className={`${cellInputNumeric} text-right`}
                   />
+                </TableCell>
+                <TableCell className="p-1">
                   <Button
                     variant="ghost"
                     size="icon"
-                    aria-label={`Remove ${item.name}`}
-                    onClick={() => removeItem(item.id)}
+                    className="size-8"
+                    aria-label="Add item"
+                    disabled={!canAdd}
+                    onClick={handleAdd}
                   >
-                    <Trash2 className="size-4 text-muted-foreground" />
+                    <Plus className="size-4 text-primary" />
                   </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </ul>
-        )}
+                </TableCell>
+              </TableRow>
+            </TableBody>
 
-        <Card>
-          <CardContent className="flex flex-col gap-3 py-4">
-            <p className="text-sm font-medium">Add an item</p>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Input
-                placeholder="Item name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="flex-1"
-              />
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  min={1}
-                  placeholder="Qty"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  className="w-20"
-                />
-                <Input
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  placeholder="₱ Total"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="w-28"
-                />
-              </div>
-            </div>
-            <Button onClick={handleAdd} disabled={!canAdd} className="self-start">
-              <Plus className="size-4" />
-              Add item
-            </Button>
-          </CardContent>
-        </Card>
+            <TableFooter>
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={2} className="text-muted-foreground">
+                  Subtotal
+                </TableCell>
+                <TableCell colSpan={2} className="text-right font-mono">
+                  {formatPeso(receiptSubtotal(split.items))}
+                </TableCell>
+              </TableRow>
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={2} className="text-muted-foreground">
+                  Service charge
+                </TableCell>
+                <TableCell colSpan={2} className="p-1">
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="0.00"
+                    aria-label="Service charge"
+                    value={split.charges.serviceCharge || ""}
+                    onChange={(e) => setCharges({ serviceCharge: Number(e.target.value) || 0 })}
+                    className={`${cellInputNumeric} text-right`}
+                  />
+                </TableCell>
+              </TableRow>
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={2} className="font-semibold">
+                  Total
+                </TableCell>
+                <TableCell colSpan={2} className="text-right font-mono font-semibold">
+                  {formatPeso(receiptGrandTotal(split))}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </div>
 
-        <Separator />
-
-        <Card>
-          <CardContent className="flex flex-col gap-4 py-4">
-            <p className="text-sm font-medium">VAT &amp; service charge (optional)</p>
-            <div className="flex gap-3">
-              <div className="flex-1 space-y-1.5">
-                <Label htmlFor="vat">VAT (₱)</Label>
-                <Input
-                  id="vat"
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  value={split.charges.vat || ""}
-                  onChange={(e) => setCharges({ vat: Number(e.target.value) || 0 })}
-                />
-              </div>
-              <div className="flex-1 space-y-1.5">
-                <Label htmlFor="service">Service charge (₱)</Label>
-                <Input
-                  id="service"
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  value={split.charges.serviceCharge || ""}
-                  onChange={(e) => setCharges({ serviceCharge: Number(e.target.value) || 0 })}
-                />
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Split equally across everyone at the table, regardless of what they ordered.
-            </p>
-          </CardContent>
-        </Card>
+        <p className="text-xs text-muted-foreground">
+          Service charge is split equally across everyone at the table, regardless of what they ordered.
+        </p>
       </main>
 
-      <div className="sticky bottom-0 flex items-center justify-between gap-4 border-t bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
-        <span className="text-sm text-muted-foreground">
-          Subtotal: <span className="font-medium text-foreground">{formatPeso(receiptSubtotal(split.items))}</span>
-        </span>
+      <div className="sticky bottom-0 flex items-center justify-end border-t bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
         <Button disabled={!canContinue} onClick={() => router.push("/new/people")}>
           Next
         </Button>
       </div>
-    </div>
+    </AppShell>
   );
 }

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { TopBar } from "@/components/top-bar";
 import { FlowStepper } from "@/components/flow-stepper";
+import { AppShell } from "@/components/app-shell";
 import { PersonBreakdown } from "@/components/person-breakdown";
 import { useDraftSplit } from "@/lib/store/draft-split";
 import { useHistoryStore } from "@/lib/store/history";
@@ -71,7 +72,7 @@ export default function SummaryPage() {
   if (!isFullyAssigned(split)) return null;
 
   return (
-    <div className="flex min-h-dvh flex-1 flex-col">
+    <AppShell>
       <TopBar />
       <FlowStepper current={3} />
 
@@ -101,12 +102,6 @@ export default function SummaryPage() {
               <span>Subtotal</span>
               <span>{formatPeso(receiptSubtotal(split.items))}</span>
             </div>
-            {split.charges.vat > 0 && (
-              <div className="flex justify-between text-muted-foreground">
-                <span>VAT</span>
-                <span>{formatPeso(split.charges.vat)}</span>
-              </div>
-            )}
             {split.charges.serviceCharge > 0 && (
               <div className="flex justify-between text-muted-foreground">
                 <span>Service charge</span>
@@ -146,6 +141,6 @@ export default function SummaryPage() {
         </Button>
         <Button onClick={handleBackToHome}>Back to home</Button>
       </div>
-    </div>
+    </AppShell>
   );
 }

@@ -20,7 +20,7 @@ export function PersonBreakdown({
   const lines = personLineItems(split, person.id);
   const charge = chargeShare(split);
   const total = personTotal(split, person.id);
-  const hasCharges = split.charges.vat > 0 || split.charges.serviceCharge > 0;
+  const hasCharges = split.charges.serviceCharge > 0;
 
   return (
     <Card>
@@ -51,7 +51,7 @@ export function PersonBreakdown({
             ))}
             {hasCharges && (
               <div className="flex justify-between text-muted-foreground">
-                <span>VAT &amp; service charge (equal share)</span>
+                <span>Service charge (equal share)</span>
                 <span>{formatPeso(charge)}</span>
               </div>
             )}
