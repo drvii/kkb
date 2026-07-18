@@ -1,0 +1,3 @@
+# Defer receipt OCR; v1 is fully client-side with manual entry only
+
+The notes proposed camera-based receipt OCR alongside a "no database, everything client-side" constraint — but real OCR needs either client-side inference (lower accuracy, heavier bundle) or a server-side proxy to a vision API (introduces a backend and key management), which conflicts with the client-side-only goal. To keep v1 simple, OCR is deferred entirely: v1 receipt building is manual entry through the UI only, and the app ships with zero backend and zero database. OCR (client-side or server-assisted) is a future addition, not a v1 concern.
