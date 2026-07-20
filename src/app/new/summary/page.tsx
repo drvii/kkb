@@ -6,22 +6,21 @@ import { toPng } from "html-to-image";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { TopBar } from "@/components/top-bar";
 import { FlowStepper } from "@/components/flow-stepper";
 import { AppShell } from "@/components/app-shell";
 import { PersonBreakdown } from "@/components/person-breakdown";
+import { SplitBreakdown } from "@/components/split-breakdown";
 import { useDraftSplit } from "@/lib/store/draft-split";
 import { useHistoryStore } from "@/lib/store/history";
 import { formatPeso } from "@/lib/money";
-import { isFullyAssigned, receiptGrandTotal, receiptSubtotal } from "@/lib/split-math";
+import { isFullyAssigned, receiptGrandTotal } from "@/lib/split-math";
 
 export default function SummaryPage() {
   const router = useRouter();
   const split = useDraftSplit((s) => s.split);
   const upsertHistory = useHistoryStore((s) => s.upsert);
 
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [exporting, setExporting] = useState(false);
   const exportRef = useRef<HTMLDivElement>(null);
 
@@ -33,18 +32,6 @@ export default function SummaryPage() {
     upsertHistory(split);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [split.id]);
-
-  function toggle(id: string) {
-    setExpanded((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  }
 
   async function handleSaveImage() {
     if (!exportRef.current) return;
@@ -82,38 +69,7 @@ export default function SummaryPage() {
           <p className="text-sm text-muted-foreground">Tap a person to see how their total was computed.</p>
         </div>
 
-        {/* Visible, interactive breakdown (collapsed by default) */}
-        <ul className="flex flex-col gap-2">
-          {split.people.map((person) => (
-            <li key={person.id}>
-              <PersonBreakdown
-                split={split}
-                person={person}
-                expanded={expanded.has(person.id)}
-                onToggle={() => toggle(person.id)}
-              />
-            </li>
-          ))}
-        </ul>
-
-        <Card>
-          <CardContent className="flex flex-col gap-1.5 py-4 text-sm">
-            <div className="flex justify-between text-muted-foreground">
-              <span>Subtotal</span>
-              <span>{formatPeso(receiptSubtotal(split.items))}</span>
-            </div>
-            {split.charges.serviceCharge > 0 && (
-              <div className="flex justify-between text-muted-foreground">
-                <span>Service charge</span>
-                <span>{formatPeso(split.charges.serviceCharge)}</span>
-              </div>
-            )}
-            <div className="flex justify-between border-t pt-1.5 font-semibold">
-              <span>Total</span>
-              <span>{formatPeso(receiptGrandTotal(split))}</span>
-            </div>
-          </CardContent>
-        </Card>
+        <SplitBreakdown split={split} />
       </main>
 
       {/* Off-screen export snapshot: forced fully-expanded per person */}
