@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Trash2 } from "lucide-react";
+import { Info, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -14,6 +14,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { TopBar } from "@/components/top-bar";
 import { FlowStepper } from "@/components/flow-stepper";
 import { AppShell } from "@/components/app-shell";
@@ -23,7 +28,6 @@ import { receiptGrandTotal, receiptSubtotal } from "@/lib/split-math";
 
 const cellInput =
   "h-8 border-none bg-transparent px-1.5 shadow-none focus-visible:ring-1 focus-visible:ring-ring";
-const cellInputNumeric = `${cellInput} font-mono`;
 
 export default function ReceiptPage() {
   const router = useRouter();
@@ -36,6 +40,9 @@ export default function ReceiptPage() {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
+
+  const [qtyDrafts, setQtyDrafts] = useState<Record<string, string>>({});
+  const [priceDrafts, setPriceDrafts] = useState<Record<string, string>>({});
 
   const parsedQuantity = Math.max(1, Math.floor(Number(quantity) || 1));
   const parsedPrice = Number(price);
@@ -62,6 +69,30 @@ export default function ReceiptPage() {
     if (canAdd) handleAdd();
   }
 
+  function commitQtyDraft(itemId: string) {
+    const draft = qtyDrafts[itemId];
+    if (draft !== undefined) {
+      updateItem(itemId, { quantity: Math.max(1, Math.floor(Number(draft) || 1)) });
+      setQtyDrafts((drafts) => {
+        const rest = { ...drafts };
+        delete rest[itemId];
+        return rest;
+      });
+    }
+  }
+
+  function commitPriceDraft(itemId: string) {
+    const draft = priceDrafts[itemId];
+    if (draft !== undefined) {
+      updateItem(itemId, { totalPrice: Math.max(0, Number(draft) || 0) });
+      setPriceDrafts((drafts) => {
+        const rest = { ...drafts };
+        delete rest[itemId];
+        return rest;
+      });
+    }
+  }
+
   const canContinue = split.items.length > 0;
 
   return (
@@ -81,7 +112,7 @@ export default function ReceiptPage() {
               <TableRow className="hover:bg-transparent">
                 <TableHead>Item</TableHead>
                 <TableHead className="w-14 text-center">Qty</TableHead>
-                <TableHead className="w-24 text-right font-mono">Price</TableHead>
+                <TableHead className="w-24 text-right">Price</TableHead>
                 <TableHead className="w-9 p-0" />
               </TableRow>
             </TableHeader>
@@ -99,13 +130,12 @@ export default function ReceiptPage() {
                     <Input
                       type="number"
                       min={1}
-                      value={item.quantity}
+                      value={qtyDrafts[item.id] ?? item.quantity}
                       onChange={(e) =>
-                        updateItem(item.id, {
-                          quantity: Math.max(1, Math.floor(Number(e.target.value) || 1)),
-                        })
+                        setQtyDrafts((drafts) => ({ ...drafts, [item.id]: e.target.value }))
                       }
-                      className={`${cellInputNumeric} text-center`}
+                      onBlur={() => commitQtyDraft(item.id)}
+                      className={`${cellInput} text-center`}
                     />
                   </TableCell>
                   <TableCell className="p-1">
@@ -113,9 +143,12 @@ export default function ReceiptPage() {
                       type="number"
                       min={0}
                       step="0.01"
-                      value={item.totalPrice || ""}
-                      onChange={(e) => updateItem(item.id, { totalPrice: Number(e.target.value) || 0 })}
-                      className={`${cellInputNumeric} text-right`}
+                      value={priceDrafts[item.id] ?? (item.totalPrice || "")}
+                      onChange={(e) =>
+                        setPriceDrafts((drafts) => ({ ...drafts, [item.id]: e.target.value }))
+                      }
+                      onBlur={() => commitPriceDraft(item.id)}
+                      className={`${cellInput} text-right`}
                     />
                   </TableCell>
                   <TableCell className="p-1">
@@ -150,7 +183,7 @@ export default function ReceiptPage() {
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     onKeyDown={handleAddKeyDown}
-                    className={`${cellInputNumeric} text-center`}
+                    className={`${cellInput} text-center`}
                   />
                 </TableCell>
                 <TableCell className="p-1">
@@ -162,7 +195,7 @@ export default function ReceiptPage() {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     onKeyDown={handleAddKeyDown}
-                    className={`${cellInputNumeric} text-right`}
+                    className={`${cellInput} text-right`}
                   />
                 </TableCell>
                 <TableCell className="p-1">
@@ -185,13 +218,27 @@ export default function ReceiptPage() {
                 <TableCell colSpan={2} className="text-muted-foreground">
                   Subtotal
                 </TableCell>
-                <TableCell colSpan={2} className="text-right font-mono">
+                <TableCell colSpan={2} className="text-right">
                   {formatPeso(receiptSubtotal(split.items))}
                 </TableCell>
               </TableRow>
               <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={2} className="text-muted-foreground">
-                  Service charge
+                  <span className="inline-flex items-center gap-1">
+                    Service charge
+                    <Tooltip>
+                      <TooltipTrigger
+                        aria-label="About service charge"
+                        className="inline-flex items-center rounded-sm p-0 text-muted-foreground/70 outline-none hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring"
+                      >
+                        <Info className="size-3.5" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Service charge is split equally across everyone at the table, regardless of what they
+                        ordered.
+                      </TooltipContent>
+                    </Tooltip>
+                  </span>
                 </TableCell>
                 <TableCell colSpan={2} className="p-1">
                   <Input
@@ -202,7 +249,7 @@ export default function ReceiptPage() {
                     aria-label="Service charge"
                     value={split.charges.serviceCharge || ""}
                     onChange={(e) => setCharges({ serviceCharge: Number(e.target.value) || 0 })}
-                    className={`${cellInputNumeric} text-right`}
+                    className={`${cellInput} text-right`}
                   />
                 </TableCell>
               </TableRow>
@@ -210,17 +257,13 @@ export default function ReceiptPage() {
                 <TableCell colSpan={2} className="font-semibold">
                   Total
                 </TableCell>
-                <TableCell colSpan={2} className="text-right font-mono font-semibold">
+                <TableCell colSpan={2} className="text-right font-semibold">
                   {formatPeso(receiptGrandTotal(split))}
                 </TableCell>
               </TableRow>
             </TableFooter>
           </Table>
         </div>
-
-        <p className="text-xs text-muted-foreground">
-          Service charge is split equally across everyone at the table, regardless of what they ordered.
-        </p>
       </main>
 
       <div className="sticky bottom-0 flex items-center justify-end border-t bg-background/95 px-4 py-3 backdrop-blur sm:px-6">

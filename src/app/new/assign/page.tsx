@@ -58,7 +58,7 @@ export default function AssignPage() {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead>Item</TableHead>
-                <TableHead className="w-20 text-right font-mono">Price</TableHead>
+                <TableHead className="w-20 text-right">Price</TableHead>
                 <TableHead className="w-16" />
               </TableRow>
             </TableHeader>
@@ -82,7 +82,7 @@ export default function AssignPage() {
                         ? `${unit.item.name} (${unit.index + 1}/${unit.item.quantity})`
                         : unit.item.name}
                     </TableCell>
-                    <TableCell className="text-right font-mono text-muted-foreground">
+                    <TableCell className="text-right text-muted-foreground">
                       {formatPeso(unitPrice(unit.item))}
                     </TableCell>
                     <TableCell>
