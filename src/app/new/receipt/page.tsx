@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Info, Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,10 @@ export default function ReceiptPage() {
 
   const [qtyDrafts, setQtyDrafts] = useState<Record<string, string>>({});
   const [priceDrafts, setPriceDrafts] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (split.people.length === 0) router.replace("/new/people");
+  }, [split.people.length, router]);
 
   const parsedQuantity = Math.max(1, Math.floor(Number(quantity) || 1));
   const parsedPrice = Number(price);
@@ -98,21 +102,23 @@ export default function ReceiptPage() {
   return (
     <AppShell>
       <TopBar />
-      <FlowStepper current={0} />
+      <FlowStepper current={1} />
 
       <main className="flex flex-1 flex-col gap-4 px-4 pb-28 sm:px-6">
         <div>
-          <h1 className="text-xl font-semibold">Build the receipt</h1>
-          <p className="text-sm text-muted-foreground">Add each line item, then the service charge if there is one.</p>
+          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">Build the receipt</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Add each line item, then the service charge.</p>
         </div>
 
-        <div className="overflow-hidden rounded-lg border">
+        <div className="overflow-hidden rounded-xl border">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead>Item</TableHead>
-                <TableHead className="w-14 text-center">Qty</TableHead>
-                <TableHead className="w-24 text-right">Price</TableHead>
+                <TableHead className="font-mono text-[10px] tracking-[0.08em] uppercase">Item</TableHead>
+                <TableHead className="w-14 text-center font-mono text-[10px] tracking-[0.08em] uppercase">Qty</TableHead>
+                <TableHead className="w-24 text-right font-mono text-[10px] tracking-[0.08em] uppercase">
+                  Price
+                </TableHead>
                 <TableHead className="w-9 p-0" />
               </TableRow>
             </TableHeader>
@@ -135,7 +141,7 @@ export default function ReceiptPage() {
                         setQtyDrafts((drafts) => ({ ...drafts, [item.id]: e.target.value }))
                       }
                       onBlur={() => commitQtyDraft(item.id)}
-                      className={`${cellInput} text-center`}
+                      className={`${cellInput} text-center font-mono`}
                     />
                   </TableCell>
                   <TableCell className="p-1">
@@ -148,7 +154,7 @@ export default function ReceiptPage() {
                         setPriceDrafts((drafts) => ({ ...drafts, [item.id]: e.target.value }))
                       }
                       onBlur={() => commitPriceDraft(item.id)}
-                      className={`${cellInput} text-right`}
+                      className={`${cellInput} text-right font-mono`}
                     />
                   </TableCell>
                   <TableCell className="p-1">
@@ -218,7 +224,7 @@ export default function ReceiptPage() {
                 <TableCell colSpan={2} className="text-muted-foreground">
                   Subtotal
                 </TableCell>
-                <TableCell colSpan={2} className="text-right">
+                <TableCell colSpan={2} className="text-right font-mono">
                   {formatPeso(receiptSubtotal(split.items))}
                 </TableCell>
               </TableRow>
@@ -254,10 +260,10 @@ export default function ReceiptPage() {
                 </TableCell>
               </TableRow>
               <TableRow className="hover:bg-transparent">
-                <TableCell colSpan={2} className="font-semibold">
+                <TableCell colSpan={2} className="font-bold">
                   Total
                 </TableCell>
-                <TableCell colSpan={2} className="text-right font-semibold">
+                <TableCell colSpan={2} className="text-right font-mono font-bold">
                   {formatPeso(receiptGrandTotal(split))}
                 </TableCell>
               </TableRow>
@@ -267,7 +273,7 @@ export default function ReceiptPage() {
       </main>
 
       <div className="sticky bottom-0 flex items-center justify-end border-t bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
-        <Button disabled={!canContinue} onClick={() => router.push("/new/people")}>
+        <Button disabled={!canContinue} onClick={() => router.push("/new/assign")}>
           Next
         </Button>
       </div>

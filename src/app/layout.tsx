@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "KKB — Kanya-Kanyang Bayad",
-  description: "Split the bill by scanning or entering a receipt, assigning items to people at the table.",
+  description: "Split the bill by entering a receipt and assigning items to people at the table.",
 };
 
 export default function RootLayout({

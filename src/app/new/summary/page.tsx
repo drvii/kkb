@@ -63,10 +63,13 @@ export default function SummaryPage() {
       <TopBar />
       <FlowStepper current={3} />
 
-      <main className="flex flex-1 flex-col gap-6 px-4 pb-28 sm:px-6">
+      <main className="flex flex-1 flex-col gap-5 px-4 pb-28 sm:px-6">
         <div>
-          <h1 className="text-xl font-semibold">Summary</h1>
-          <p className="text-sm text-muted-foreground">Tap a person to see how their total was computed.</p>
+          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">Kanya-kanyang bayad</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {new Date(split.createdAt).toLocaleDateString("en-PH", { month: "short", day: "numeric" })} · tap a name
+            for the breakdown.
+          </p>
         </div>
 
         <SplitBreakdown split={split} />
@@ -95,7 +98,9 @@ export default function SummaryPage() {
           <Download className="size-4" />
           {exporting ? "Saving…" : "Save image"}
         </Button>
-        <Button onClick={handleBackToHome}>Back to home</Button>
+        <Button className="font-bold" onClick={handleBackToHome}>
+          Back to home
+        </Button>
       </div>
     </AppShell>
   );

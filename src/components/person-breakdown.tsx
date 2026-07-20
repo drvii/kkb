@@ -32,8 +32,8 @@ export function PersonBreakdown({
           className="flex w-full items-center gap-3 text-left disabled:cursor-default"
         >
           <PersonAvatar person={person} />
-          <span className="flex-1 font-medium">{person.name}</span>
-          <span className="font-semibold">{formatPeso(total)}</span>
+          <span className="flex-1 font-semibold">{person.name}</span>
+          <span className="font-mono text-base font-extrabold">{formatPeso(total)}</span>
           {onToggle && (
             <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", expanded && "rotate-180")} />
           )}
@@ -46,13 +46,13 @@ export function PersonBreakdown({
                   {line.label}
                   {line.shared ? ` (shared ×${line.shareCount})` : ""}
                 </span>
-                <span>{formatPeso(line.amount)}</span>
+                <span className="font-mono">{formatPeso(line.amount)}</span>
               </div>
             ))}
             {hasCharges && (
               <div className="flex justify-between text-muted-foreground">
                 <span>Service charge (equal share)</span>
-                <span>{formatPeso(charge)}</span>
+                <span className="font-mono">{formatPeso(charge)}</span>
               </div>
             )}
           </div>

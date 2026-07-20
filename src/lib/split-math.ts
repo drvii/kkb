@@ -106,16 +106,12 @@ export function getInitials(name: string): string {
 }
 
 const COLOR_PALETTE = [
-  "oklch(0.65 0.2 25)",
-  "oklch(0.65 0.18 145)",
-  "oklch(0.62 0.21 260)",
-  "oklch(0.75 0.18 80)",
-  "oklch(0.65 0.22 320)",
-  "oklch(0.7 0.15 200)",
-  "oklch(0.65 0.2 40)",
-  "oklch(0.6 0.15 300)",
-  "oklch(0.7 0.19 170)",
-  "oklch(0.65 0.23 10)",
+  "#12b886",
+  "#fd7e14",
+  "#4dabf7",
+  "#f06595",
+  "#9775fa",
+  "#fab005",
 ];
 
 export function colorForIndex(index: number): string {

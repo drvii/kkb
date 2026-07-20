@@ -43,10 +43,10 @@ export default function HistorySplitPage({ params }: { params: Promise<{ id: str
         </button>
 
         <div>
-          <h1 className="text-xl font-semibold">
+          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">
             {new Date(split.createdAt).toLocaleString("en-PH", { dateStyle: "medium", timeStyle: "short" })}
           </h1>
-          <p className="text-sm text-muted-foreground">Read-only — start a new split to make changes.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Read-only — start a new split to make changes.</p>
         </div>
 
         <SplitBreakdown split={split} />

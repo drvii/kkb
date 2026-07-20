@@ -33,8 +33,8 @@ export default function HistoryPage() {
 
       <main className="flex flex-1 flex-col gap-6 px-4 py-4 sm:px-6">
         <div>
-          <h1 className="text-xl font-semibold">Recent splits</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">Recent splits</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Your last {splits.length} {splits.length === 1 ? "split" : "splits"}, saved on this device.
           </p>
         </div>
@@ -49,14 +49,16 @@ export default function HistoryPage() {
                   role="button"
                   tabIndex={0}
                   onClick={() => router.push(`/history/${split.id}`)}
-                  className="cursor-pointer"
+                  className="cursor-pointer rounded-xl"
                 >
                   <CardContent className="flex items-center gap-3 py-3">
                     <div className="flex flex-1 flex-col gap-1.5">
-                      <span className="text-sm text-muted-foreground">
+                      <span className="font-mono text-xs text-muted-foreground uppercase">
                         {new Date(split.createdAt).toLocaleString("en-PH", {
-                          dateStyle: "medium",
-                          timeStyle: "short",
+                          month: "short",
+                          day: "2-digit",
+                          hour: "numeric",
+                          minute: "2-digit",
                         })}
                       </span>
                       <div className="flex -space-x-2">
@@ -65,7 +67,7 @@ export default function HistoryPage() {
                         ))}
                       </div>
                     </div>
-                    <span className="font-semibold">{formatPeso(receiptGrandTotal(split))}</span>
+                    <span className="font-mono text-base font-bold">{formatPeso(receiptGrandTotal(split))}</span>
                     <ChevronRight className="size-4 text-muted-foreground" />
                   </CardContent>
                 </Card>

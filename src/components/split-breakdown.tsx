@@ -41,17 +41,17 @@ export function SplitBreakdown({ split }: { split: Split }) {
         <CardContent className="flex flex-col gap-1.5 py-4 text-sm">
           <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
-            <span>{formatPeso(receiptSubtotal(split.items))}</span>
+            <span className="font-mono">{formatPeso(receiptSubtotal(split.items))}</span>
           </div>
           {split.charges.serviceCharge > 0 && (
             <div className="flex justify-between text-muted-foreground">
               <span>Service charge</span>
-              <span>{formatPeso(split.charges.serviceCharge)}</span>
+              <span className="font-mono">{formatPeso(split.charges.serviceCharge)}</span>
             </div>
           )}
-          <div className="flex justify-between border-t pt-1.5 font-semibold">
+          <div className="flex justify-between border-t pt-1.5 font-bold">
             <span>Total</span>
-            <span>{formatPeso(receiptGrandTotal(split))}</span>
+            <span className="font-mono">{formatPeso(receiptGrandTotal(split))}</span>
           </div>
         </CardContent>
       </Card>

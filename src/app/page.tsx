@@ -1,73 +1,81 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { History } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TopBar } from "@/components/top-bar";
 import { AppShell } from "@/components/app-shell";
+import { PersonAvatar } from "@/components/person-avatar";
 import { useDraftSplit } from "@/lib/store/draft-split";
 import { useHistoryStore } from "@/lib/store/history";
-
-const STARS = [
-  { char: "*", top: "14%", left: "12%", size: "text-lg", rotate: "rotate-12", opacity: "text-muted-foreground/30" },
-  { char: "✦", top: "22%", left: "82%", size: "text-2xl", rotate: "-rotate-12", opacity: "text-muted-foreground/20" },
-  { char: "✳", top: "72%", left: "16%", size: "text-sm", rotate: "rotate-6", opacity: "text-muted-foreground/30" },
-  { char: "*", top: "68%", left: "85%", size: "text-xl", rotate: "-rotate-6", opacity: "text-muted-foreground/20" },
-  { char: "✧", top: "40%", left: "6%", size: "text-base", rotate: "rotate-3", opacity: "text-muted-foreground/20" },
-];
+import { formatPeso } from "@/lib/money";
+import { receiptGrandTotal } from "@/lib/split-math";
+import { eyebrowClass } from "@/lib/utils";
 
 export default function HomePage() {
   const router = useRouter();
   const startNew = useDraftSplit((s) => s.startNew);
-  const historyCount = useHistoryStore((s) => s.splits.length);
+  const recentSplits = useHistoryStore((s) => s.splits).slice(0, 3);
 
   function handleStart() {
     startNew();
-    router.push("/new/receipt");
+    router.push("/new/people");
   }
 
   return (
     <AppShell>
-      <TopBar showWordmark={false} />
-      <main className="relative flex flex-1 flex-col items-center justify-center gap-6 overflow-hidden px-6 text-center">
-        {STARS.map((star, i) => (
-          <span
-            key={i}
-            aria-hidden
-            style={{ top: star.top, left: star.left }}
-            className={`pointer-events-none absolute font-mono select-none ${star.size} ${star.rotate} ${star.opacity}`}
-          >
-            {star.char}
-          </span>
-        ))}
-
-        <div className="relative flex flex-col items-center gap-3">
-          <h1 className="animate-in text-2xl font-semibold tracking-tight fade-in-0 slide-in-from-bottom-2 duration-700">
-            kkb<span className="text-primary">.</span>
+      <TopBar />
+      <main className="flex flex-1 flex-col justify-center gap-8 px-6 pb-16">
+        <div className="flex flex-col gap-4">
+          <p className={eyebrowClass}>Kanya-kanyang bayad</p>
+          <h1 className="text-5xl leading-[1.02] font-extrabold text-balance tracking-[-0.035em]">
+            Everyone pays their own.
           </h1>
-
-          <p className="animate-in max-w-xs text-balance text-sm text-muted-foreground fade-in-0 slide-in-from-bottom-2 duration-700 delay-150">
-            Scan or enter the receipt, tap who had what, and everyone knows exactly what they owe.
-          </p>
         </div>
 
-        <Button
-          size="lg"
-          className="h-12 w-full max-w-xs animate-in text-base fade-in-0 slide-in-from-bottom-2 duration-700 delay-300"
-          onClick={handleStart}
-        >
-          Get started
+        <Button size="lg" className="h-13 w-full text-base font-bold" onClick={handleStart}>
+          Start a new split
+          <ArrowRight className="size-4" />
         </Button>
 
-        {historyCount > 0 && (
-          <button
-            type="button"
-            onClick={() => router.push("/history")}
-            className="relative inline-flex animate-in items-center gap-1.5 text-sm text-muted-foreground fade-in-0 underline-offset-4 duration-700 delay-500 hover:text-foreground hover:underline"
-          >
-            <History className="size-3.5" />
-            Recent splits
-          </button>
+        {recentSplits.length > 0 && (
+          <div className="flex flex-col gap-1 border-t pt-4">
+            <div className="mb-1 flex items-baseline justify-between">
+              <span className="font-mono text-[11px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+                Recent
+              </span>
+              <button
+                type="button"
+                onClick={() => router.push("/history")}
+                className="font-mono text-[11px] font-semibold text-primary hover:underline"
+              >
+                All →
+              </button>
+            </div>
+            {recentSplits.map((split) => (
+              <button
+                key={split.id}
+                type="button"
+                onClick={() => router.push(`/history/${split.id}`)}
+                className="flex items-center justify-between gap-3 border-b py-3.5 text-left last:border-b-0"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="flex -space-x-2">
+                    {split.people.slice(0, 4).map((p) => (
+                      <PersonAvatar key={p.id} person={p} size="sm" className="ring-2 ring-background" />
+                    ))}
+                  </div>
+                  <span className="font-mono text-xs text-muted-foreground">
+                    {new Date(split.createdAt)
+                      .toLocaleDateString("en-PH", { month: "short", day: "2-digit" })
+                      .toUpperCase()}{" "}
+                    · {split.people.length} PAX
+                  </span>
+                </div>
+                <span className="font-mono text-base font-bold">{formatPeso(receiptGrandTotal(split))}</span>
+              </button>
+            ))}
+          </div>
         )}
       </main>
     </AppShell>
