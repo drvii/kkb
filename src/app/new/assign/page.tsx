@@ -121,7 +121,7 @@ export default function AssignPage() {
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") handleQuickTap(unit);
                       }}
-                      className="cursor-pointer whitespace-normal font-medium"
+                      className="cursor-pointer whitespace-normal text-xs font-medium"
                     >
                       {unitLabel(unit)}
                     </TableCell>
@@ -129,7 +129,7 @@ export default function AssignPage() {
                       role="button"
                       tabIndex={-1}
                       onClick={() => handleQuickTap(unit)}
-                      className="cursor-pointer text-right font-mono text-muted-foreground"
+                      className="cursor-pointer text-right font-mono text-xs text-muted-foreground"
                     >
                       {formatPeso(unitPrice(unit.item))}
                     </TableCell>

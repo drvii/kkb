@@ -23,23 +23,23 @@ export function PersonBreakdown({
   const hasCharges = split.charges.serviceCharge > 0;
 
   return (
-    <Card>
-      <CardContent className="py-3">
+    <Card size="sm">
+      <CardContent>
         <button
           type="button"
           onClick={onToggle}
           disabled={!onToggle}
-          className="flex w-full items-center gap-3 text-left disabled:cursor-default"
+          className="flex w-full items-center gap-2 text-left disabled:cursor-default"
         >
-          <PersonAvatar person={person} />
-          <span className="flex-1 font-semibold">{person.name}</span>
-          <span className="font-mono text-base font-extrabold">{formatPeso(total)}</span>
+          <PersonAvatar person={person} size="sm" />
+          <span className="flex-1 truncate text-sm font-semibold">{person.name}</span>
+          <span className="font-mono text-sm font-bold">{formatPeso(total)}</span>
           {onToggle && (
-            <ChevronDown className={cn("size-4 text-muted-foreground transition-transform", expanded && "rotate-180")} />
+            <ChevronDown className={cn("size-3.5 text-muted-foreground transition-transform", expanded && "rotate-180")} />
           )}
         </button>
         {expanded && (
-          <div className="mt-3 flex flex-col gap-1.5 border-t pt-3 text-sm">
+          <div className="mt-2 flex flex-col gap-1 border-t pt-2 text-xs">
             {lines.map((line) => (
               <div key={line.unit.unitId} className="flex justify-between text-muted-foreground">
                 <span>

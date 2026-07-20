@@ -27,7 +27,7 @@ import { formatPeso } from "@/lib/money";
 import { receiptGrandTotal, receiptSubtotal } from "@/lib/split-math";
 
 const cellInput =
-  "h-8 border-none bg-transparent px-1.5 shadow-none focus-visible:ring-1 focus-visible:ring-ring";
+  "h-8 border-none bg-transparent px-1.5 text-xs shadow-none focus-visible:ring-1 focus-visible:ring-ring";
 
 export default function ReceiptPage() {
   const router = useRouter();
@@ -189,7 +189,7 @@ export default function ReceiptPage() {
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value)}
                     onKeyDown={handleAddKeyDown}
-                    className={`${cellInput} text-center`}
+                    className={`${cellInput} text-center font-mono`}
                   />
                 </TableCell>
                 <TableCell className="p-1">
@@ -201,7 +201,7 @@ export default function ReceiptPage() {
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
                     onKeyDown={handleAddKeyDown}
-                    className={`${cellInput} text-right`}
+                    className={`${cellInput} text-right font-mono`}
                   />
                 </TableCell>
                 <TableCell className="p-1">
@@ -224,7 +224,7 @@ export default function ReceiptPage() {
                 <TableCell colSpan={2} className="text-muted-foreground">
                   Subtotal
                 </TableCell>
-                <TableCell colSpan={2} className="text-right font-mono">
+                <TableCell colSpan={2} className="text-right font-mono text-xs">
                   {formatPeso(receiptSubtotal(split.items))}
                 </TableCell>
               </TableRow>
@@ -255,7 +255,7 @@ export default function ReceiptPage() {
                     aria-label="Service charge"
                     value={split.charges.serviceCharge || ""}
                     onChange={(e) => setCharges({ serviceCharge: Number(e.target.value) || 0 })}
-                    className={`${cellInput} text-right`}
+                    className={`${cellInput} text-right font-mono`}
                   />
                 </TableCell>
               </TableRow>
@@ -263,7 +263,7 @@ export default function ReceiptPage() {
                 <TableCell colSpan={2} className="font-bold">
                   Total
                 </TableCell>
-                <TableCell colSpan={2} className="text-right font-mono font-bold">
+                <TableCell colSpan={2} className="text-right font-mono text-xs font-bold">
                   {formatPeso(receiptGrandTotal(split))}
                 </TableCell>
               </TableRow>

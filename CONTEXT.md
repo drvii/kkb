@@ -5,7 +5,7 @@ A mobile-first, fully client-side app for splitting a restaurant bill among the 
 ## Language
 
 **Split**:
-One complete instance of the bill-splitting flow — has a Receipt, a list of People, Assignments linking items to people, and computed Totals per person. This is the unit saved to history.
+One complete instance of the bill-splitting flow — has a Name (user-editable, defaults to "New Split"), a Receipt, a list of People, Assignments linking items to people, and computed Totals per person. This is the unit saved to history. The Name is set on the SPLIT step, shows on the exported/shared image, and identifies the Split in Recent Splits (both the homepage preview and the full history list).
 _Avoid_: Session, Bill
 
 **Receipt**:

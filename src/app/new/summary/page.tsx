@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
-import { Download } from "lucide-react";
+import { Download, SquarePen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { TopBar } from "@/components/top-bar";
 import { FlowStepper } from "@/components/flow-stepper";
 import { AppShell } from "@/components/app-shell";
@@ -19,6 +20,7 @@ import { isFullyAssigned, receiptGrandTotal } from "@/lib/split-math";
 export default function SummaryPage() {
   const router = useRouter();
   const split = useDraftSplit((s) => s.split);
+  const setName = useDraftSplit((s) => s.setName);
   const upsertHistory = useHistoryStore((s) => s.upsert);
 
   const [exporting, setExporting] = useState(false);
@@ -30,8 +32,7 @@ export default function SummaryPage() {
       return;
     }
     upsertHistory(split);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [split.id]);
+  }, [split, upsertHistory, router]);
 
   async function handleSaveImage() {
     if (!exportRef.current) return;
@@ -65,10 +66,17 @@ export default function SummaryPage() {
 
       <main className="flex flex-1 flex-col gap-5 px-4 pb-28 sm:px-6">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">Kanya-kanyang bayad</h1>
+          <div className="relative">
+            <Input
+              value={split.name}
+              onChange={(e) => setName(e.target.value)}
+              aria-label="Split name"
+              className="h-auto border-none bg-transparent px-0 py-0.5 pr-6 text-2xl font-semibold tracking-[-0.02em] shadow-none focus-visible:ring-0 md:text-1xl"
+            />
+            <SquarePen className="pointer-events-none absolute right-0 bottom-1 size-3.5 text-muted-foreground/50" />
+          </div>
           <p className="mt-1 text-sm text-muted-foreground">
-            {new Date(split.createdAt).toLocaleDateString("en-PH", { month: "short", day: "numeric" })} · tap a name
-            for the breakdown.
+            {new Date(split.createdAt).toLocaleDateString("en-PH", { month: "short", day: "numeric" })}
           </p>
         </div>
 
@@ -78,7 +86,7 @@ export default function SummaryPage() {
       {/* Off-screen export snapshot: forced fully-expanded per person */}
       <div className="pointer-events-none fixed left-[-9999px] top-0" aria-hidden>
         <div ref={exportRef} className="flex w-[400px] flex-col gap-3 bg-background p-6">
-          <h2 className="text-lg font-bold">Kanya-Kanyang Bayad</h2>
+          <h2 className="text-lg font-bold">{split.name}</h2>
           <ul className="flex flex-col gap-2">
             {split.people.map((person) => (
               <li key={person.id}>

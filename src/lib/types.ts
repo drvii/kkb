@@ -21,6 +21,7 @@ export type Assignments = Record<string, string[]>;
 
 export type Split = {
   id: string;
+  name: string;
   createdAt: string;
   items: Item[];
   people: Person[];

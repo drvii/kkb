@@ -5,9 +5,12 @@ import { persist } from "zustand/middleware";
 import type { Item, Person, Split } from "@/lib/types";
 import { colorForIndex, getInitials, unitsForItem } from "@/lib/split-math";
 
+export const DEFAULT_SPLIT_NAME = "New Split";
+
 function emptySplit(): Split {
   return {
     id: crypto.randomUUID(),
+    name: DEFAULT_SPLIT_NAME,
     createdAt: new Date().toISOString(),
     items: [],
     people: [],
@@ -19,6 +22,7 @@ function emptySplit(): Split {
 type DraftSplitState = {
   split: Split;
   startNew: () => void;
+  setName: (name: string) => void;
   addItem: (item: Omit<Item, "id">) => void;
   updateItem: (id: string, patch: Partial<Omit<Item, "id">>) => void;
   removeItem: (id: string) => void;
@@ -34,6 +38,8 @@ export const useDraftSplit = create<DraftSplitState>()(
       split: emptySplit(),
 
       startNew: () => set({ split: emptySplit() }),
+
+      setName: (name) => set((state) => ({ split: { ...state.split, name } })),
 
       addItem: (item) =>
         set((state) => ({

@@ -8,6 +8,7 @@ import { TopBar } from "@/components/top-bar";
 import { AppShell } from "@/components/app-shell";
 import { SplitBreakdown } from "@/components/split-breakdown";
 import { useHistoryStore } from "@/lib/store/history";
+import { DEFAULT_SPLIT_NAME } from "@/lib/store/draft-split";
 
 export default function HistorySplitPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -43,10 +44,11 @@ export default function HistorySplitPage({ params }: { params: Promise<{ id: str
         </button>
 
         <div>
-          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">
-            {new Date(split.createdAt).toLocaleString("en-PH", { dateStyle: "medium", timeStyle: "short" })}
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">Read-only — start a new split to make changes.</p>
+          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">{split.name || DEFAULT_SPLIT_NAME}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {new Date(split.createdAt).toLocaleString("en-PH", { dateStyle: "medium", timeStyle: "short" })} ·
+            read-only.
+          </p>
         </div>
 
         <SplitBreakdown split={split} />

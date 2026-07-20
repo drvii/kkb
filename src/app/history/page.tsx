@@ -19,6 +19,7 @@ import { TopBar } from "@/components/top-bar";
 import { AppShell } from "@/components/app-shell";
 import { PersonAvatar } from "@/components/person-avatar";
 import { useHistoryStore } from "@/lib/store/history";
+import { DEFAULT_SPLIT_NAME } from "@/lib/store/draft-split";
 import { formatPeso } from "@/lib/money";
 import { receiptGrandTotal } from "@/lib/split-math";
 
@@ -53,6 +54,7 @@ export default function HistoryPage() {
                 >
                   <CardContent className="flex items-center gap-3 py-3">
                     <div className="flex flex-1 flex-col gap-1.5">
+                      <span className="truncate font-semibold">{split.name || DEFAULT_SPLIT_NAME}</span>
                       <span className="font-mono text-xs text-muted-foreground uppercase">
                         {new Date(split.createdAt).toLocaleString("en-PH", {
                           month: "short",
