@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { TopBar } from "@/components/top-bar";
 import { AppShell } from "@/components/app-shell";
@@ -10,6 +10,8 @@ import { useDraftSplit, DEFAULT_SPLIT_NAME } from "@/lib/store/draft-split";
 import { useHistoryStore } from "@/lib/store/history";
 import { formatPeso } from "@/lib/money";
 import { receiptGrandTotal } from "@/lib/split-math";
+
+const WORDMARK_CHARS = ["k", "k", "b", "."];
 
 export default function HomePage() {
   const router = useRouter();
@@ -26,8 +28,16 @@ export default function HomePage() {
       <TopBar />
       <main className="flex flex-1 flex-col justify-center gap-8 px-6 pb-16">
         <div className="flex flex-col gap-4">
-          <p className="text-7xl font-extrabold tracking-[-0.03em]">
-            kkb<span className="text-primary">.</span>
+          <p className="font-wordmark text-7xl font-bold tracking-[-0.02em]">
+            {WORDMARK_CHARS.map((char, i) => (
+              <span
+                key={i}
+                className={`animate-letter-pop inline-block ${i === 3 ? "text-primary" : ""}`}
+                style={{ animationDelay: `${i * 90}ms` }}
+              >
+                {char}
+              </span>
+            ))}
           </p>
           <p className="text-md text-balance text-muted-foreground">
             Split any restaurant bill fairly — enter the receipt, assign what everyone had, and see exactly who owes
@@ -73,11 +83,13 @@ export default function HomePage() {
                       <PersonAvatar key={p.id} person={p} size="xs" className="ring-2 ring-background" />
                     ))}
                   </div>
-                  <span className="font-sans text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1 font-sans text-xs text-muted-foreground">
                     {new Date(split.createdAt)
                       .toLocaleDateString("en-PH", { month: "short", day: "2-digit" })
                       .toUpperCase()}{" "}
-                    · {split.people.length} PAX
+                    ·
+                    <Users className="size-3" />
+                    {split.people.length}
                   </span>
                 </div>
               </button>

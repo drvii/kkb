@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toPng } from "html-to-image";
 import { toast } from "sonner";
-import { Download, SquarePen } from "lucide-react";
+import { Download, Loader2Icon, SquarePen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TopBar } from "@/components/top-bar";
@@ -66,12 +66,12 @@ export default function SummaryPage() {
 
       <main className="flex flex-1 flex-col gap-5 px-4 pb-28 sm:px-6">
         <div>
-          <div className="relative">
+          <div className="relative inline-block w-fit max-w-full">
             <Input
               value={split.name}
               onChange={(e) => setName(e.target.value)}
               aria-label="Split name"
-              className="h-auto border-none bg-transparent px-0 py-0.5 pr-6 text-2xl font-semibold tracking-[-0.02em] shadow-none focus-visible:ring-0 md:text-1xl"
+              className="field-sizing-content h-auto w-auto min-w-0 max-w-full border-none bg-transparent px-0 py-0.5 pr-6 text-2xl font-semibold tracking-[-0.02em] shadow-none focus-visible:ring-0 md:text-1xl dark:bg-transparent"
             />
             <SquarePen className="pointer-events-none absolute right-0 bottom-1 size-3.5 text-muted-foreground/50" />
           </div>
@@ -102,9 +102,8 @@ export default function SummaryPage() {
       </div>
 
       <div className="sticky bottom-0 flex items-center justify-between gap-3 border-t bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
-        <Button variant="outline" onClick={handleSaveImage} disabled={exporting}>
-          <Download className="size-4" />
-          {exporting ? "Saving…" : "Save image"}
+        <Button size="icon" aria-label={exporting ? "Saving…" : "Save image"} onClick={handleSaveImage} disabled={exporting}>
+          {exporting ? <Loader2Icon className="size-4 animate-spin" /> : <Download className="size-4" />}
         </Button>
         <Button className="font-bold" onClick={handleBackToHome}>
           Back to home

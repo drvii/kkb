@@ -26,5 +26,9 @@ One individual instance within an Item's quantity — the atomic thing assignabl
 The link between a Unit and the one or more People sharing it. When multiple People share a Unit, its price splits equally among them.
 _Avoid_: Split (reserved for the whole flow instance)
 
+**Rebuild**:
+Starting a new Split from an existing one — carries over its People, Items, and Charges into a fresh draft, but discards its Assignments (since edited Items can invalidate old ones). Used from a saved Split's history detail page when the user spots a missing Item or typo after the fact; lands on the Receipt step so they can fix it, then re-does Assign/Summary. The original saved Split is untouched.
+_Avoid_: Duplicate, Clone, Copy, Edit (this creates a new Split, it does not modify the saved one)
+
 **Receipt Charges**:
 The service charge, entered as a flat ₱ amount on the Receipt (not itemized, not percentage-based) and split equally across every Person on the Split regardless of their Assignments. VAT is not tracked separately — Item prices are assumed VAT-inclusive, as is standard on PH receipts. See ADR-0002, ADR-0003.

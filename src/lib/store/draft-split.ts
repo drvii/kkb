@@ -22,6 +22,7 @@ function emptySplit(): Split {
 type DraftSplitState = {
   split: Split;
   startNew: () => void;
+  startFrom: (source: Split) => void;
   setName: (name: string) => void;
   addItem: (item: Omit<Item, "id">) => void;
   updateItem: (id: string, patch: Partial<Omit<Item, "id">>) => void;
@@ -38,6 +39,19 @@ export const useDraftSplit = create<DraftSplitState>()(
       split: emptySplit(),
 
       startNew: () => set({ split: emptySplit() }),
+
+      startFrom: (source) =>
+        set({
+          split: {
+            id: crypto.randomUUID(),
+            name: source.name,
+            createdAt: new Date().toISOString(),
+            items: source.items.map((item) => ({ ...item })),
+            people: source.people.map((person) => ({ ...person })),
+            assignments: {},
+            charges: { ...source.charges },
+          },
+        }),
 
       setName: (name) => set((state) => ({ split: { ...state.split, name } })),
 
