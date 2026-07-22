@@ -31,10 +31,10 @@ export function GitHubBadge() {
       href={`https://github.com/${REPO}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+      className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
     >
       <Star className="size-3.5" />
-      {stars !== null && <span>{stars}</span>}
+      {stars !== null && <span className="font-mono text-xs">{stars}</span>}
     </a>
   );
 }

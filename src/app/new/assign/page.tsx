@@ -65,7 +65,7 @@ export default function AssignPage() {
 
       <main className="flex flex-1 flex-col gap-4 px-4 pb-28 sm:px-6">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">Assign items</h1>
+          <h1 className="text-2xl font-bold tracking-[-0.02em]">Assign items</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             {activePerson
               ? `Tap what ${activePerson.name} had — tap again to remove.`
@@ -93,7 +93,7 @@ export default function AssignPage() {
           })}
         </div>
 
-        <div className="overflow-hidden rounded-xl border">
+        <div className="overflow-hidden rounded-xl border border-border">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
@@ -160,7 +160,7 @@ export default function AssignPage() {
         </div>
       </main>
 
-      <div className="sticky bottom-0 flex items-center justify-between gap-4 border-t bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
+      <div className="sticky bottom-0 flex items-center justify-between gap-4 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
         <span className="font-mono text-sm text-muted-foreground">
           {units.filter((u) => isUnitAssigned(split.assignments, u)).length}/{units.length} ASSIGNED
         </span>
@@ -170,7 +170,7 @@ export default function AssignPage() {
       </div>
 
       <Sheet open={activeUnit !== null} onOpenChange={(open) => !open && setActiveUnit(null)}>
-        <SheetContent side="bottom" className="rounded-t-2xl">
+        <SheetContent side="bottom" className="rounded-t-2xl border-border">
           <SheetHeader>
             <SheetTitle>{activeUnit ? unitLabel(activeUnit) : ""}</SheetTitle>
             <SheetDescription className="font-mono">

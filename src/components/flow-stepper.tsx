@@ -14,7 +14,7 @@ export function FlowStepper({ current }: { current: number }) {
   const router = useRouter();
 
   return (
-    <nav className="flex items-center gap-1.5 px-4 pb-5 sm:px-6" aria-label="Split flow progress">
+    <nav className="flex items-center gap-1.5 px-4 pt-4 pb-5 sm:px-6" aria-label="Split flow progress">
       {STEPS.map((step, index) => {
         const isPast = index < current;
         const isCurrent = index === current;
@@ -26,19 +26,19 @@ export function FlowStepper({ current }: { current: number }) {
             disabled={!reachable}
             onClick={() => reachable && router.push(step.path)}
             className={cn(
-              "flex flex-1 flex-col gap-1.5 text-left",
+              "flex flex-1 flex-col gap-2 text-left transition-opacity",
               reachable ? "cursor-pointer" : "cursor-not-allowed opacity-40",
             )}
           >
             <span
               className={cn(
-                "h-1 rounded-full transition-colors",
+                "h-1 rounded-full transition-colors duration-300 ease-out",
                 isCurrent || isPast ? "bg-primary" : "bg-muted",
               )}
             />
             <span
               className={cn(
-                "font-mono text-[10px] tracking-[0.05em] uppercase",
+                "font-mono text-[10px] tracking-[0.06em] uppercase transition-colors",
                 isCurrent ? "font-semibold text-foreground" : "text-muted-foreground/70",
               )}
             >

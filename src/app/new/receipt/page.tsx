@@ -27,7 +27,7 @@ import { formatPeso } from "@/lib/money";
 import { receiptGrandTotal, receiptSubtotal } from "@/lib/split-math";
 
 const cellInput =
-  "h-8 border-none bg-transparent px-1.5 text-xs shadow-none focus-visible:ring-1 focus-visible:ring-ring";
+  "h-8 rounded-md border-none bg-transparent px-1.5 text-xs shadow-none focus-visible:ring-1 focus-visible:ring-ring";
 
 export default function ReceiptPage() {
   const router = useRouter();
@@ -106,11 +106,11 @@ export default function ReceiptPage() {
 
       <main className="flex flex-1 flex-col gap-4 px-4 pb-28 sm:px-6">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">Build the receipt</h1>
+          <h1 className="text-2xl font-bold tracking-[-0.02em]">Build the receipt</h1>
           <p className="mt-1 text-sm text-muted-foreground">Add each line item, then the service charge.</p>
         </div>
 
-        <div className="overflow-hidden rounded-xl border">
+        <div className="overflow-hidden rounded-xl border border-border">
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
@@ -272,7 +272,7 @@ export default function ReceiptPage() {
         </div>
       </main>
 
-      <div className="sticky bottom-0 flex items-center justify-end border-t bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
+      <div className="sticky bottom-0 flex items-center justify-end border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
         <Button disabled={!canContinue} onClick={() => router.push("/new/assign")}>
           Next
         </Button>

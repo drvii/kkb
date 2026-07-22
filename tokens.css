@@ -1,0 +1,59 @@
+/*
+ * KKB design tokens — modern-minimal, tuned on the app's existing brand blue.
+ * Mirrors src/app/globals.css :root / .dark; this file is the portable export.
+ */
+
+:root {
+  /* Hallmark-canonical names (see design.md § Theme) */
+  --color-paper: oklch(1 0 0);
+  --color-paper-2: oklch(0.984 0.003 258);
+  --color-ink: oklch(0.16 0.004 260);
+  --color-ink-2: oklch(0.48 0.006 260);
+  --color-rule: oklch(0.9 0.004 260);
+  --color-accent: oklch(0.55 0.19 258);
+  --color-accent-ink: oklch(0.99 0 0);
+  --color-focus: oklch(0.55 0.19 258);
+
+  --font-display: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-outlier: "Geist Mono", ui-monospace, monospace;
+
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.375rem;
+  --text-xl: 1.5rem;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-short: 150ms;
+  --dur-base: 220ms;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-2xl: 22px;
+  --radius-full: 999px;
+}
+
+:root[data-theme="dark"],
+.dark {
+  --color-paper: oklch(0.17 0.006 260);
+  --color-paper-2: oklch(0.23 0.008 260);
+  --color-ink: oklch(0.97 0.002 260);
+  --color-ink-2: oklch(0.66 0.008 260);
+  --color-rule: oklch(1 0 0 / 10%);
+  --color-accent: oklch(0.7 0.17 258);
+  --color-accent-ink: oklch(0.99 0 0);
+  --color-focus: oklch(0.7 0.17 258);
+}

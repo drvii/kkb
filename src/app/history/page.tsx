@@ -34,7 +34,7 @@ export default function HistoryPage() {
 
       <main className="flex flex-1 flex-col gap-6 px-4 py-4 sm:px-6">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">Recent splits</h1>
+          <h1 className="text-2xl font-bold tracking-[-0.02em]">Recent splits</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Your last {splits.length} {splits.length === 1 ? "split" : "splits"}, saved on this device.
           </p>
@@ -50,7 +50,7 @@ export default function HistoryPage() {
                   role="button"
                   tabIndex={0}
                   onClick={() => router.push(`/history/${split.id}`)}
-                  className="cursor-pointer rounded-xl"
+                  className="cursor-pointer rounded-xl transition-colors hover:bg-muted/50"
                 >
                   <CardContent className="flex items-center gap-3 py-3">
                     <div className="flex flex-1 flex-col gap-1.5">

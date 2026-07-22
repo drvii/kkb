@@ -80,7 +80,7 @@ export default function HistorySplitPage({ params }: { params: Promise<{ id: str
               value={split.name}
               onChange={(e) => renameSplit(split.id, e.target.value)}
               aria-label="Split name"
-              className="field-sizing-content h-auto w-auto min-w-0 max-w-full border-none bg-transparent px-0 py-0.5 pr-6 text-2xl font-extrabold tracking-[-0.02em] shadow-none focus-visible:ring-0 dark:bg-transparent"
+              className="field-sizing-content h-auto w-auto min-w-0 max-w-full rounded-md border-none bg-transparent px-0 py-0.5 pr-6 text-2xl font-bold tracking-[-0.02em] shadow-none focus-visible:ring-0 dark:bg-transparent"
             />
             <SquarePen className="pointer-events-none absolute right-0 bottom-1 size-3.5 text-muted-foreground/50" />
           </div>
@@ -92,8 +92,8 @@ export default function HistorySplitPage({ params }: { params: Promise<{ id: str
         <SplitBreakdown split={split} />
       </main>
 
-      <div className="sticky bottom-0 border-t bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
-        <Button className="w-full" onClick={handleRebuildClick}>
+      <div className="sticky bottom-0 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
+        <Button className="w-full font-semibold" onClick={handleRebuildClick}>
           <RotateCcw className="size-4" />
           Rebuild
         </Button>

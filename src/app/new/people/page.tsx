@@ -35,7 +35,7 @@ export default function PeoplePage() {
 
       <main className="flex flex-1 flex-col gap-5 px-4 pb-28 sm:px-6">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">Who&apos;s at the table?</h1>
+          <h1 className="text-2xl font-bold tracking-[-0.02em]">Who&apos;s at the table?</h1>
           <p className="mt-1 text-sm text-muted-foreground">Add everyone splitting this bill.</p>
         </div>
 
@@ -50,11 +50,11 @@ export default function PeoplePage() {
                 handleAdd();
               }
             }}
-            className="h-12 flex-1 rounded-xl text-base"
+            className="h-12 flex-1 rounded-full px-4 text-base"
           />
           <Button
             size="icon-lg"
-            className="size-12 rounded-xl"
+            className="size-12"
             aria-label="Add person"
             onClick={handleAdd}
             disabled={!name.trim()}
@@ -68,7 +68,7 @@ export default function PeoplePage() {
             {split.people.map((person) => (
               <div
                 key={person.id}
-                className="flex animate-in items-center gap-3 rounded-xl border bg-card py-2.5 pr-3 pl-2.5 zoom-in-95 fade-in-0"
+                className="flex animate-in items-center gap-3 rounded-xl border border-border bg-card py-2.5 pr-3 pl-2.5 fade-in-0"
               >
                 <PersonAvatar person={person} size="sm" />
                 <span className="flex-1 font-semibold">{person.name}</span>
@@ -76,7 +76,7 @@ export default function PeoplePage() {
                   type="button"
                   onClick={() => removePerson(person.id)}
                   aria-label={`Remove ${person.name}`}
-                  className="flex size-6 items-center justify-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+                  className="flex size-6 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <X className="size-3.5" />
                 </button>
@@ -86,7 +86,7 @@ export default function PeoplePage() {
         )}
       </main>
 
-      <div className="sticky bottom-0 flex items-center justify-end gap-4 border-t bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
+      <div className="sticky bottom-0 flex items-center justify-end gap-4 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
         <Button disabled={!canContinue} onClick={() => router.push("/new/receipt")}>
           Next — build the receipt
         </Button>

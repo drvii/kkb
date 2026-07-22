@@ -71,7 +71,7 @@ export default function SummaryPage() {
               value={split.name}
               onChange={(e) => setName(e.target.value)}
               aria-label="Split name"
-              className="field-sizing-content h-auto w-auto min-w-0 max-w-full border-none bg-transparent px-0 py-0.5 pr-6 text-2xl font-semibold tracking-[-0.02em] shadow-none focus-visible:ring-0 md:text-1xl dark:bg-transparent"
+              className="field-sizing-content h-auto w-auto min-w-0 max-w-full rounded-md border-none bg-transparent px-0 py-0.5 pr-6 text-2xl font-bold tracking-[-0.02em] shadow-none focus-visible:ring-0 md:text-1xl dark:bg-transparent"
             />
             <SquarePen className="pointer-events-none absolute right-0 bottom-1 size-3.5 text-muted-foreground/50" />
           </div>
@@ -101,11 +101,17 @@ export default function SummaryPage() {
         </div>
       </div>
 
-      <div className="sticky bottom-0 flex items-center justify-between gap-3 border-t bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
-        <Button size="icon" aria-label={exporting ? "Saving…" : "Save image"} onClick={handleSaveImage} disabled={exporting}>
+      <div className="sticky bottom-0 flex items-center justify-between gap-3 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label={exporting ? "Saving…" : "Save image"}
+          onClick={handleSaveImage}
+          disabled={exporting}
+        >
           {exporting ? <Loader2Icon className="size-4 animate-spin" /> : <Download className="size-4" />}
         </Button>
-        <Button className="font-bold" onClick={handleBackToHome}>
+        <Button className="flex-1 font-semibold" onClick={handleBackToHome}>
           Back to home
         </Button>
       </div>
