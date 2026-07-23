@@ -35,7 +35,7 @@ export function PersonBreakdown({
             onCheckedChange={onTogglePaid}
             disabled={!onTogglePaid}
             aria-label={paid ? `Mark ${person.name} as unpaid` : `Mark ${person.name} as paid`}
-            className="rounded-full border-transparent bg-transparent hover:ring-1 hover:ring-border data-checked:border-transparent data-checked:bg-transparent data-checked:text-muted-foreground dark:bg-transparent dark:data-checked:bg-transparent"
+            className="size-3.5 rounded-full border-border bg-transparent data-checked:border-transparent data-checked:bg-transparent data-checked:text-muted-foreground dark:bg-transparent dark:data-checked:bg-transparent"
           />
           <button
             type="button"
