@@ -13,8 +13,12 @@ The raw set of digitized or manually-entered line Items (name + price) that make
 _Avoid_: Bill (ambiguous with the finished Split)
 
 **Person**:
-Someone at the table who items get assigned to. Gets a unique color and initials-based icon. UI copy refers to these collectively as "people at the table."
+Someone at the table who items get assigned to. Gets a unique color and initials-based icon. UI copy refers to these collectively as "people at the table." Also carries a Paid flag, scoped to the Split it belongs to (see **Paid**).
 _Avoid_: Diner, Guest, User
+
+**Paid**:
+A boolean fact about one Person within one Split — whether they've settled their share. Scoped to the (Person, Split) pair, not a global property of the person: the same person can be Paid in one Split and unpaid in another, and Paid always starts false for every Person in a new or Rebuilt Split. Purely a manual, user-toggled bookkeeping flag — it does not affect any computed Total and has no bearing on whether a Split itself is "done." Shown on the Summary and History-detail breakdowns, and reflected in the exported/shared image.
+_Avoid_: Settled (reserve for a possible future whole-Split-is-done state, which this is not)
 
 **Item**:
 A line entry on a Receipt (name, quantity, total price). Decomposes into one or more Units based on quantity.
@@ -27,7 +31,7 @@ The link between a Unit and the one or more People sharing it. When multiple Peo
 _Avoid_: Split (reserved for the whole flow instance)
 
 **Rebuild**:
-Starting a new Split from an existing one — carries over its People, Items, and Charges into a fresh draft, but discards its Assignments (since edited Items can invalidate old ones). Used from a saved Split's history detail page when the user spots a missing Item or typo after the fact; lands on the Receipt step so they can fix it, then re-does Assign/Summary. The original saved Split is untouched.
+Starting a new Split from an existing one — carries over its People, Items, and Charges into a fresh draft, but discards its Assignments (since edited Items can invalidate old ones) and resets everyone's Paid flag to unpaid (a Rebuilt Split is a fresh, not-yet-settled instance). Used from a saved Split's history detail page when the user spots a missing Item or typo after the fact; lands on the Receipt step so they can fix it, then re-does Assign/Summary. The original saved Split is untouched.
 _Avoid_: Duplicate, Clone, Copy, Edit (this creates a new Split, it does not modify the saved one)
 
 **Receipt Charges**:

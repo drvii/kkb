@@ -7,7 +7,13 @@ import { formatPeso } from "@/lib/money";
 import { receiptGrandTotal, receiptSubtotal } from "@/lib/split-math";
 import type { Split } from "@/lib/types";
 
-export function SplitBreakdown({ split }: { split: Split }) {
+export function SplitBreakdown({
+  split,
+  onTogglePaid,
+}: {
+  split: Split;
+  onTogglePaid?: (personId: string) => void;
+}) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   function toggle(id: string) {
@@ -32,6 +38,7 @@ export function SplitBreakdown({ split }: { split: Split }) {
               person={person}
               expanded={expanded.has(person.id)}
               onToggle={() => toggle(person.id)}
+              onTogglePaid={onTogglePaid && (() => onTogglePaid(person.id))}
             />
           </li>
         ))}

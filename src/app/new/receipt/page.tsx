@@ -117,7 +117,7 @@ export default function ReceiptPage() {
                 <TableHead className="font-mono text-[10px] tracking-[0.08em] uppercase">Item</TableHead>
                 <TableHead className="w-14 text-center font-mono text-[10px] tracking-[0.08em] uppercase">Qty</TableHead>
                 <TableHead className="w-24 text-right font-mono text-[10px] tracking-[0.08em] uppercase">
-                  Price
+                  Total Price
                 </TableHead>
                 <TableHead className="w-9 p-0" />
               </TableRow>

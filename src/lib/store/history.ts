@@ -10,6 +10,7 @@ type HistoryState = {
   splits: Split[];
   upsert: (split: Split) => void;
   renameSplit: (id: string, name: string) => void;
+  togglePaid: (splitId: string, personId: string) => void;
   clear: () => void;
 };
 
@@ -27,6 +28,20 @@ export const useHistoryStore = create<HistoryState>()(
       renameSplit: (id, name) =>
         set((state) => ({
           splits: state.splits.map((s) => (s.id === id ? { ...s, name } : s)),
+        })),
+
+      togglePaid: (splitId, personId) =>
+        set((state) => ({
+          splits: state.splits.map((s) =>
+            s.id === splitId
+              ? {
+                  ...s,
+                  people: s.people.map((p) =>
+                    p.id === personId ? { ...p, paid: !p.paid } : p,
+                  ),
+                }
+              : s,
+          ),
         })),
 
       clear: () => set({ splits: [] }),

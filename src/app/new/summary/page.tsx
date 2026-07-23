@@ -21,6 +21,7 @@ export default function SummaryPage() {
   const router = useRouter();
   const split = useDraftSplit((s) => s.split);
   const setName = useDraftSplit((s) => s.setName);
+  const togglePaid = useDraftSplit((s) => s.togglePaid);
   const upsertHistory = useHistoryStore((s) => s.upsert);
 
   const [exporting, setExporting] = useState(false);
@@ -80,7 +81,7 @@ export default function SummaryPage() {
           </p>
         </div>
 
-        <SplitBreakdown split={split} />
+        <SplitBreakdown split={split} onTogglePaid={togglePaid} />
       </main>
 
       {/* Off-screen export snapshot: forced fully-expanded per person */}

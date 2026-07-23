@@ -31,6 +31,7 @@ type DraftSplitState = {
   addPerson: (name: string) => void;
   removePerson: (id: string) => void;
   toggleUnitPerson: (unitId: string, personId: string) => void;
+  togglePaid: (personId: string) => void;
 };
 
 export const useDraftSplit = create<DraftSplitState>()(
@@ -47,7 +48,7 @@ export const useDraftSplit = create<DraftSplitState>()(
             name: source.name,
             createdAt: new Date().toISOString(),
             items: source.items.map((item) => ({ ...item })),
-            people: source.people.map((person) => ({ ...person })),
+            people: source.people.map((person) => ({ ...person, paid: false })),
             assignments: {},
             charges: { ...source.charges },
           },
@@ -108,6 +109,7 @@ export const useDraftSplit = create<DraftSplitState>()(
             name,
             initials: getInitials(name),
             color: colorForIndex(state.split.people.length),
+            paid: false,
           };
           return { split: { ...state.split, people: [...state.split.people, person] } };
         }),
@@ -140,6 +142,16 @@ export const useDraftSplit = create<DraftSplitState>()(
             },
           };
         }),
+
+      togglePaid: (personId) =>
+        set((state) => ({
+          split: {
+            ...state.split,
+            people: state.split.people.map((p) =>
+              p.id === personId ? { ...p, paid: !p.paid } : p,
+            ),
+          },
+        })),
 
     }),
     { name: "kkb.draft-split", skipHydration: true },

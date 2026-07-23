@@ -10,6 +10,7 @@ export type Person = {
   name: string;
   color: string;
   initials: string;
+  paid: boolean;
 };
 
 export type ReceiptCharges = {
