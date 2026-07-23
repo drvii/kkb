@@ -22,6 +22,7 @@ import {
 import { TopBar } from "@/components/top-bar";
 import { FlowStepper } from "@/components/flow-stepper";
 import { AppShell } from "@/components/app-shell";
+import { ScanReceiptControl } from "@/components/scan-receipt-control";
 import { useDraftSplit } from "@/lib/store/draft-split";
 import { formatPeso } from "@/lib/money";
 import { receiptGrandTotal, receiptSubtotal } from "@/lib/split-math";
@@ -272,7 +273,8 @@ export default function ReceiptPage() {
         </div>
       </main>
 
-      <div className="sticky bottom-0 flex items-center justify-end border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
+      <div className="sticky bottom-0 flex items-center justify-between gap-2 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
+        <ScanReceiptControl />
         <Button disabled={!canContinue} onClick={() => router.push("/new/assign")}>
           Next
         </Button>
