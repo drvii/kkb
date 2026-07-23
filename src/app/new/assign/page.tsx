@@ -20,13 +20,9 @@ import { AppShell } from "@/components/app-shell";
 import { PersonAvatar } from "@/components/person-avatar";
 import { useDraftSplit } from "@/lib/store/draft-split";
 import { formatPeso } from "@/lib/money";
-import { allUnits, isFullyAssigned, isUnitAssigned, unitPrice } from "@/lib/split-math";
+import { allUnits, isFullyAssigned, isUnitAssigned, unitLabel, unitPrice, unitShareAmount } from "@/lib/split-math";
 import type { Unit } from "@/lib/types";
 import { cn } from "@/lib/utils";
-
-function unitLabel(unit: Unit) {
-  return unit.item.quantity > 1 ? `${unit.item.name} (${unit.index + 1}/${unit.item.quantity})` : unit.item.name;
-}
 
 export default function AssignPage() {
   const router = useRouter();
@@ -178,7 +174,7 @@ export default function AssignPage() {
               {activeAssignedIds.length > 1 &&
                 activeUnit &&
                 ` · split ${activeAssignedIds.length} ways = ${formatPeso(
-                  unitPrice(activeUnit.item) / activeAssignedIds.length,
+                  unitShareAmount(activeUnit.item, activeAssignedIds.length),
                 )} each`}
             </SheetDescription>
           </SheetHeader>

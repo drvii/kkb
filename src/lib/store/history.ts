@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Split } from "@/lib/types";
+import { renameSplit, togglePersonPaid } from "@/lib/split-entity";
 
 const MAX_HISTORY = 5;
 
@@ -27,21 +28,12 @@ export const useHistoryStore = create<HistoryState>()(
 
       renameSplit: (id, name) =>
         set((state) => ({
-          splits: state.splits.map((s) => (s.id === id ? { ...s, name } : s)),
+          splits: state.splits.map((s) => (s.id === id ? renameSplit(s, name) : s)),
         })),
 
       togglePaid: (splitId, personId) =>
         set((state) => ({
-          splits: state.splits.map((s) =>
-            s.id === splitId
-              ? {
-                  ...s,
-                  people: s.people.map((p) =>
-                    p.id === personId ? { ...p, paid: !p.paid } : p,
-                  ),
-                }
-              : s,
-          ),
+          splits: state.splits.map((s) => (s.id === splitId ? togglePersonPaid(s, personId) : s)),
         })),
 
       clear: () => set({ splits: [] }),

@@ -1,9 +1,7 @@
 "use client";
 
-import { use, useRef, useState } from "react";
+import { use, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toPng } from "html-to-image";
-import { toast } from "sonner";
 import { ArrowLeft, Download, Loader2Icon, RotateCcw, SquarePen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,10 +17,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { TopBar } from "@/components/top-bar";
 import { AppShell } from "@/components/app-shell";
-import { PersonBreakdown } from "@/components/person-breakdown";
 import { SplitBreakdown } from "@/components/split-breakdown";
-import { formatPeso } from "@/lib/money";
-import { receiptGrandTotal } from "@/lib/split-math";
+import { SplitExportSnapshot, useSplitImageExport } from "@/components/split-export";
 import { useHistoryStore } from "@/lib/store/history";
 import { useDraftSplit, DEFAULT_SPLIT_NAME } from "@/lib/store/draft-split";
 
@@ -36,8 +32,7 @@ export default function HistorySplitPage({ params }: { params: Promise<{ id: str
   const startFrom = useDraftSplit((s) => s.startFrom);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [exporting, setExporting] = useState(false);
-  const exportRef = useRef<HTMLDivElement>(null);
+  const { snapshotRef, exporting, save: handleSaveImage } = useSplitImageExport(split);
 
   if (!split) {
     return (
@@ -57,25 +52,6 @@ export default function HistorySplitPage({ params }: { params: Promise<{ id: str
     if (!split) return;
     startFrom(split);
     router.push("/new/receipt");
-  }
-
-  async function handleSaveImage() {
-    if (!split || !exportRef.current) return;
-    setExporting(true);
-    try {
-      const dataUrl = await toPng(exportRef.current, {
-        pixelRatio: 3,
-        backgroundColor: getComputedStyle(document.body).backgroundColor,
-      });
-      const link = document.createElement("a");
-      link.download = `kkb-split-${split.id.slice(0, 8)}.png`;
-      link.href = dataUrl;
-      link.click();
-    } catch {
-      toast.error("Couldn't save the image. Please try again.");
-    } finally {
-      setExporting(false);
-    }
   }
 
   function handleRebuildClick() {
@@ -119,23 +95,7 @@ export default function HistorySplitPage({ params }: { params: Promise<{ id: str
         <SplitBreakdown split={split} onTogglePaid={(personId) => togglePaid(split.id, personId)} />
       </main>
 
-      {/* Off-screen export snapshot: forced fully-expanded per person */}
-      <div className="pointer-events-none fixed left-[-9999px] top-0" aria-hidden>
-        <div ref={exportRef} className="flex w-[400px] flex-col gap-3 bg-background p-6">
-          <h2 className="text-lg font-bold">{split.name}</h2>
-          <ul className="flex flex-col gap-2">
-            {split.people.map((person) => (
-              <li key={person.id}>
-                <PersonBreakdown split={split} person={person} expanded />
-              </li>
-            ))}
-          </ul>
-          <div className="flex justify-between border-t pt-2 text-sm font-semibold">
-            <span>Total</span>
-            <span>{formatPeso(receiptGrandTotal(split))}</span>
-          </div>
-        </div>
-      </div>
+      <SplitExportSnapshot split={split} snapshotRef={snapshotRef} />
 
       <div className="sticky bottom-0 flex items-center justify-between gap-3 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
         <Button

@@ -5,6 +5,15 @@ export function unitId(itemId: string, index: number): string {
   return `${itemId}:${index}`;
 }
 
+/** Inverse of unitId — the Item a unit belongs to. */
+export function itemIdFromUnitId(id: string): string {
+  return id.slice(0, id.lastIndexOf(":"));
+}
+
+export function unitLabel(unit: Unit): string {
+  return unit.item.quantity > 1 ? `${unit.item.name} (${unit.index + 1}/${unit.item.quantity})` : unit.item.name;
+}
+
 export function unitsForItem(item: Item): Unit[] {
   return Array.from({ length: Math.max(1, item.quantity) }, (_, index) => ({
     unitId: unitId(item.id, index),
@@ -31,11 +40,16 @@ export function isFullyAssigned(split: Split): boolean {
   return units.length > 0 && units.every((u) => isUnitAssigned(split.assignments, u));
 }
 
+/** A unit's price when split shareCount ways — the single source of truth for shared-price rounding. */
+export function unitShareAmount(item: Item, shareCount: number): number {
+  return roundCentavos(unitPrice(item) / Math.max(1, shareCount));
+}
+
 /** Each person's rounded share of a single unit, keyed by personId. */
 export function unitShares(unit: Unit, assignments: Assignments): Record<string, number> {
   const people = assignments[unit.unitId] ?? [];
   if (people.length === 0) return {};
-  const share = roundCentavos(unitPrice(unit.item) / people.length);
+  const share = unitShareAmount(unit.item, people.length);
   return Object.fromEntries(people.map((personId) => [personId, share]));
 }
 
@@ -62,7 +76,7 @@ export function personLineItems(split: Split, personId: string): PersonLineItem[
     const shares = unitShares(unit, split.assignments);
     lines.push({
       unit,
-      label: unit.item.quantity > 1 ? `${unit.item.name} (${unit.index + 1}/${unit.item.quantity})` : unit.item.name,
+      label: unitLabel(unit),
       shared: sharedWith.length > 1,
       shareCount: sharedWith.length,
       amount: shares[personId] ?? 0,
@@ -71,12 +85,18 @@ export function personLineItems(split: Split, personId: string): PersonLineItem[
   return lines;
 }
 
-export function personItemsTotal(split: Split, personId: string): number {
-  return personLineItems(split, personId).reduce((sum, line) => sum + line.amount, 0);
-}
+export type PersonBreakdown = {
+  lineItems: PersonLineItem[];
+  chargeShare: number;
+  total: number;
+};
 
-export function personTotal(split: Split, personId: string): number {
-  return roundCentavos(personItemsTotal(split, personId) + chargeShare(split));
+/** Everything needed to render one Person's card: their line items, service-charge share, and total. */
+export function personBreakdown(split: Split, personId: string): PersonBreakdown {
+  const lineItems = personLineItems(split, personId);
+  const charge = chargeShare(split);
+  const itemsTotal = lineItems.reduce((sum, line) => sum + line.amount, 0);
+  return { lineItems, chargeShare: charge, total: roundCentavos(itemsTotal + charge) };
 }
 
 export function receiptSubtotal(items: Item[]): number {
@@ -85,10 +105,6 @@ export function receiptSubtotal(items: Item[]): number {
 
 export function receiptGrandTotal(split: Split): number {
   return roundCentavos(receiptSubtotal(split.items) + split.charges.serviceCharge);
-}
-
-export function splitPeopleTotal(split: Split): number {
-  return roundCentavos(split.people.reduce((sum, p) => sum + personTotal(split, p.id), 0));
 }
 
 export function getInitials(name: string): string {

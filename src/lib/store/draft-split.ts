@@ -3,7 +3,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Item, Person, Split } from "@/lib/types";
-import { colorForIndex, getInitials, unitsForItem } from "@/lib/split-math";
+import { colorForIndex, getInitials, itemIdFromUnitId, unitsForItem } from "@/lib/split-math";
+import { renameSplit, togglePersonPaid } from "@/lib/split-entity";
 
 export const DEFAULT_SPLIT_NAME = "New Split";
 
@@ -54,7 +55,7 @@ export const useDraftSplit = create<DraftSplitState>()(
           },
         }),
 
-      setName: (name) => set((state) => ({ split: { ...state.split, name } })),
+      setName: (name) => set((state) => ({ split: renameSplit(state.split, name) })),
 
       addItem: (item) =>
         set((state) => ({
@@ -74,7 +75,7 @@ export const useDraftSplit = create<DraftSplitState>()(
           if (updated) {
             const validUnitIds = new Set(unitsForItem(updated).map((u) => u.unitId));
             for (const key of Object.keys(assignments)) {
-              if (key.startsWith(`${id}:`) && !validUnitIds.has(key)) {
+              if (itemIdFromUnitId(key) === id && !validUnitIds.has(key)) {
                 delete assignments[key];
               }
             }
@@ -86,7 +87,7 @@ export const useDraftSplit = create<DraftSplitState>()(
         set((state) => {
           const assignments = { ...state.split.assignments };
           for (const key of Object.keys(assignments)) {
-            if (key.startsWith(`${id}:`)) delete assignments[key];
+            if (itemIdFromUnitId(key) === id) delete assignments[key];
           }
           return {
             split: {
@@ -143,15 +144,7 @@ export const useDraftSplit = create<DraftSplitState>()(
           };
         }),
 
-      togglePaid: (personId) =>
-        set((state) => ({
-          split: {
-            ...state.split,
-            people: state.split.people.map((p) =>
-              p.id === personId ? { ...p, paid: !p.paid } : p,
-            ),
-          },
-        })),
+      togglePaid: (personId) => set((state) => ({ split: togglePersonPaid(state.split, personId) })),
 
     }),
     { name: "kkb.draft-split", skipHydration: true },

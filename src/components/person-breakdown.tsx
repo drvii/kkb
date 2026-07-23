@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PersonAvatar } from "@/components/person-avatar";
 import { formatPeso } from "@/lib/money";
-import { chargeShare, personLineItems, personTotal } from "@/lib/split-math";
+import { personBreakdown } from "@/lib/split-math";
 import type { Person, Split } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -20,9 +20,7 @@ export function PersonBreakdown({
   onToggle?: () => void;
   onTogglePaid?: () => void;
 }) {
-  const lines = personLineItems(split, person.id);
-  const charge = chargeShare(split);
-  const total = personTotal(split, person.id);
+  const { lineItems, chargeShare: charge, total } = personBreakdown(split, person.id);
   const hasCharges = split.charges.serviceCharge > 0;
   const paid = person.paid;
 
@@ -56,7 +54,7 @@ export function PersonBreakdown({
         </div>
         {expanded && (
           <div className="mt-2 flex flex-col gap-1 border-t pt-2 text-xs">
-            {lines.map((line) => (
+            {lineItems.map((line) => (
               <div key={line.unit.unitId} className="flex justify-between text-muted-foreground">
                 <span>
                   {line.label}
