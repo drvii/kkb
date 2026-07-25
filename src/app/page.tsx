@@ -45,10 +45,19 @@ export default function HomePage() {
           </p>
         </div>
 
-        <Button size="lg" className="h-13 w-full text-base font-semibold" onClick={handleStart}>
-          Start a new split
-          <ArrowRight className="size-4" />
-        </Button>
+        <div className="flex flex-col items-center gap-3">
+          <Button size="lg" className="h-13 w-full text-base font-semibold" onClick={handleStart}>
+            Start a new split
+            <ArrowRight className="size-4" />
+          </Button>
+          <button
+            type="button"
+            onClick={() => router.push("/tour")}
+            className="text-sm font-semibold text-primary hover:underline"
+          >
+            See the flow
+          </button>
+        </div>
 
         {recentSplits.length > 0 && (
           <div className="flex flex-col gap-1 border-t border-border pt-5">

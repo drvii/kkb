@@ -119,6 +119,15 @@ to a restrained modern-SaaS scale:
   carries every screen.
 - Home is the only page allowed a one-time (non-repeating, non-bounce) type
   entrance.
+- `/tour` is the one exception to "no separate marketing surface": a public,
+  non-interactive storyboard for showing the app's flow outside the app
+  (screenshots, sharing). It reuses real screens/components rendered from a
+  hardcoded fictional Split, frozen with the `inert` attribute rather than
+  faked — never a real user's data. Each step sits in a **hairline-border
+  device silhouette** (rounded-2xl, `--color-rule` border, soft shadow) — no
+  drawn notch/speaker/home-indicator, per the re-drawn-chrome rule. Captions
+  stack tag-above-title in one column (mono "Step 0N — Title" + one line of
+  copy), never a left-margin tag beside a heading.
 
 ## What pages MUST share
 - TopBar shape (wordmark left, GitHub badge + theme toggle right).
