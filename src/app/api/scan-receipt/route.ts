@@ -82,6 +82,9 @@ export async function POST(request: NextRequest) {
   if (!(image instanceof File)) {
     return NextResponse.json({ error: "No image provided." }, { status: 400 });
   }
+  if (!image.type.startsWith("image/")) {
+    return NextResponse.json({ error: "File must be an image." }, { status: 400 });
+  }
   if (image.size > MAX_SCAN_IMAGE_BYTES) {
     return NextResponse.json({ error: "Image is too large." }, { status: 413 });
   }

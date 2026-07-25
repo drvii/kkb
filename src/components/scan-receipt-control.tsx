@@ -52,6 +52,11 @@ export function ScanReceiptControl() {
     e.target.value = "";
     if (!file) return;
 
+    if (!file.type.startsWith("image/")) {
+      toast.error("That's not an image — pick a photo of the receipt.");
+      return;
+    }
+
     const passcode = getStoredScanPasscode();
     if (!passcode) {
       setPasscodeDialogOpen(true);
@@ -127,7 +132,6 @@ export function ScanReceiptControl() {
         ref={fileInputRef}
         type="file"
         accept="image/*"
-        capture="environment"
         className="hidden"
         onChange={handleFileChange}
       />
