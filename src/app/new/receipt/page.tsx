@@ -19,6 +19,17 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { TopBar } from "@/components/top-bar";
 import { FlowStepper } from "@/components/flow-stepper";
 import { AppShell } from "@/components/app-shell";
@@ -37,6 +48,10 @@ export default function ReceiptPage() {
   const updateItem = useDraftSplit((s) => s.updateItem);
   const removeItem = useDraftSplit((s) => s.removeItem);
   const setCharges = useDraftSplit((s) => s.setCharges);
+  const addDiscount = useDraftSplit((s) => s.addDiscount);
+  const updateDiscount = useDraftSplit((s) => s.updateDiscount);
+  const removeDiscount = useDraftSplit((s) => s.removeDiscount);
+  const clearReceipt = useDraftSplit((s) => s.clearReceipt);
 
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -99,6 +114,8 @@ export default function ReceiptPage() {
   }
 
   const canContinue = split.items.length > 0;
+  const hasReceiptContent =
+    split.items.length > 0 || split.charges.serviceCharge > 0 || split.discounts.length > 0;
 
   return (
     <AppShell>
@@ -260,6 +277,56 @@ export default function ReceiptPage() {
                   />
                 </TableCell>
               </TableRow>
+
+              {split.discounts.map((discount) => (
+                <TableRow key={discount.id} className="hover:bg-transparent">
+                  <TableCell colSpan={2} className="p-1">
+                    <Input
+                      placeholder="Discount"
+                      value={discount.label}
+                      onChange={(e) => updateDiscount(discount.id, { label: e.target.value })}
+                      className={cellInput}
+                    />
+                  </TableCell>
+                  <TableCell className="p-1">
+                    <Input
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      placeholder="0.00"
+                      aria-label={`${discount.label || "Discount"} amount`}
+                      value={discount.amount || ""}
+                      onChange={(e) => updateDiscount(discount.id, { amount: Number(e.target.value) || 0 })}
+                      className={`${cellInput} text-right font-mono`}
+                    />
+                  </TableCell>
+                  <TableCell className="p-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8"
+                      aria-label={`Remove ${discount.label || "discount"}`}
+                      onClick={() => removeDiscount(discount.id)}
+                    >
+                      <Trash2 className="size-3.5 text-muted-foreground" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={4} className="p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full justify-start text-muted-foreground"
+                    onClick={() => addDiscount()}
+                  >
+                    <Plus className="size-3.5" />
+                    Add discount
+                  </Button>
+                </TableCell>
+              </TableRow>
+
               <TableRow className="hover:bg-transparent">
                 <TableCell colSpan={2} className="font-bold">
                   Total
@@ -271,6 +338,32 @@ export default function ReceiptPage() {
             </TableFooter>
           </Table>
         </div>
+
+        {hasReceiptContent && (
+          <AlertDialog>
+            <AlertDialogTrigger
+              render={
+                <Button variant="ghost" size="sm" className="self-start text-destructive hover:text-destructive">
+                  <Trash2 className="size-3.5" />
+                  Clear receipt
+                </Button>
+              }
+            />
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Clear receipt?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This removes every item, the service charge, and all discounts from this receipt. This
+                  can&apos;t be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => clearReceipt()}>Clear</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </main>
 
       <div className="sticky bottom-0 flex items-center justify-between gap-2 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-6">

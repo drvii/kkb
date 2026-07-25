@@ -35,4 +35,8 @@ Starting a new Split from an existing one — carries over its People, Items, an
 _Avoid_: Duplicate, Clone, Copy, Edit (this creates a new Split, it does not modify the saved one)
 
 **Receipt Charges**:
-The service charge, entered as a flat ₱ amount on the Receipt (not itemized, not percentage-based) and split equally across every Person on the Split regardless of their Assignments. VAT is not tracked separately — Item prices are assumed VAT-inclusive, as is standard on PH receipts. See ADR-0002, ADR-0003.
+The service charge, entered as a flat ₱ amount on the Receipt (not itemized, not percentage-based) and split equally across every Person on the Split regardless of their Assignments. VAT is not tracked separately — Item prices are assumed VAT-inclusive, as is standard on PH receipts. See ADR-0002, ADR-0003. Distinct from **Discount**, which can target specific People instead of always being table-wide.
+
+**Discount**:
+A named deduction from the Receipt subtotal (e.g. "PWD", "Senior Citizen"), entered as a flat ₱ amount — one or more per Receipt. Its label and amount are entered on the Receipt step, but who it applies to is chosen on the Assign step (like a Unit's Assignment): either specific People (its amount splits equally among just those selected, deducted from their share) or Everyone (splits equally across the whole table, like Service Charge, and the default for a new Discount). Unlike an Item's Units, a Discount is never required to be assigned before continuing. Unlike Receipt Charges, it can target specific People rather than always being table-wide. See ADR-0005.
+_Avoid_: Deduction, Rebate

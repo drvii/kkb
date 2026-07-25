@@ -38,6 +38,14 @@ export const useHistoryStore = create<HistoryState>()(
 
       clear: () => set({ splits: [] }),
     }),
-    { name: "kkb.history", skipHydration: true },
+    {
+      name: "kkb.history",
+      skipHydration: true,
+      version: 1,
+      migrate: (persisted) => {
+        const state = persisted as HistoryState;
+        return { ...state, splits: state.splits.map((s) => ({ ...s, discounts: s.discounts ?? [] })) };
+      },
+    },
   ),
 );

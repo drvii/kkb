@@ -20,17 +20,27 @@ import { AppShell } from "@/components/app-shell";
 import { PersonAvatar } from "@/components/person-avatar";
 import { useDraftSplit } from "@/lib/store/draft-split";
 import { formatPeso } from "@/lib/money";
-import { allUnits, isFullyAssigned, isUnitAssigned, unitLabel, unitPrice, unitShareAmount } from "@/lib/split-math";
-import type { Unit } from "@/lib/types";
+import {
+  allUnits,
+  discountTargets,
+  isFullyAssigned,
+  isUnitAssigned,
+  unitLabel,
+  unitPrice,
+  unitShareAmount,
+} from "@/lib/split-math";
+import type { Discount, Unit } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 export default function AssignPage() {
   const router = useRouter();
   const split = useDraftSplit((s) => s.split);
   const toggleUnitPerson = useDraftSplit((s) => s.toggleUnitPerson);
+  const updateDiscount = useDraftSplit((s) => s.updateDiscount);
 
   const [activePersonId, setActivePersonId] = useState<string | null>(null);
   const [activeUnit, setActiveUnit] = useState<Unit | null>(null);
+  const [activeDiscountId, setActiveDiscountId] = useState<string | null>(null);
 
   useEffect(() => {
     if (split.people.length === 0) {
@@ -52,7 +62,25 @@ export default function AssignPage() {
     }
   }
 
+  function handleDiscountQuickTap(discount: Discount) {
+    if (!activePersonId) {
+      setActiveDiscountId(discount.id);
+      return;
+    }
+    // Tapping a person while a discount still applies to "everyone" narrows it to just that person —
+    // the common case is attributing a PWD/Senior discount to the one diner who qualifies for it.
+    const current = discount.appliesTo === "everyone" ? [] : discount.appliesTo;
+    const next =
+      discount.appliesTo === "everyone"
+        ? [activePersonId]
+        : current.includes(activePersonId)
+          ? current.filter((id) => id !== activePersonId)
+          : [...current, activePersonId];
+    updateDiscount(discount.id, { appliesTo: next });
+  }
+
   const activeAssignedIds = activeUnit ? (split.assignments[activeUnit.unitId] ?? []) : [];
+  const activeDiscount = split.discounts.find((d) => d.id === activeDiscountId) ?? null;
 
   return (
     <AppShell>
@@ -154,6 +182,68 @@ export default function AssignPage() {
             </TableBody>
           </Table>
         </div>
+
+        {split.discounts.length > 0 && (
+          <div>
+            <p className="mb-2 font-mono text-[10px] tracking-[0.08em] text-muted-foreground uppercase">
+              Discounts
+            </p>
+            <div className="overflow-hidden rounded-xl border border-border">
+              <Table>
+                <TableBody>
+                  {split.discounts.map((discount) => {
+                    const isEveryone = discount.appliesTo === "everyone";
+                    const targets = discountTargets(discount, split);
+                    const targetedPeople = split.people.filter((p) => targets.includes(p.id));
+                    const quickTargeted = activePersonId !== null && targets.includes(activePersonId);
+                    return (
+                      <TableRow key={discount.id} className={cn(quickTargeted && "bg-primary/5")}>
+                        <TableCell
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => handleDiscountQuickTap(discount)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") handleDiscountQuickTap(discount);
+                          }}
+                          className="cursor-pointer whitespace-normal text-xs font-medium"
+                        >
+                          {discount.label || "Discount"}
+                        </TableCell>
+                        <TableCell
+                          role="button"
+                          tabIndex={-1}
+                          onClick={() => handleDiscountQuickTap(discount)}
+                          className="cursor-pointer text-right font-mono text-xs text-muted-foreground"
+                        >
+                          -{formatPeso(discount.amount)}
+                        </TableCell>
+                        <TableCell className="w-16">
+                          <button
+                            type="button"
+                            aria-label={`Edit who ${discount.label || "this discount"} applies to`}
+                            onClick={() => setActiveDiscountId(discount.id)}
+                          >
+                            {isEveryone ? (
+                              <span className="text-[10px] whitespace-nowrap text-muted-foreground">Everyone</span>
+                            ) : targetedPeople.length > 0 ? (
+                              <div className="flex -space-x-1.5">
+                                {targetedPeople.map((p) => (
+                                  <PersonAvatar key={p.id} person={p} size="xs" className="ring-2 ring-background" />
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-[10px] whitespace-nowrap text-muted-foreground">Nobody</span>
+                            )}
+                          </button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        )}
       </main>
 
       <div className="sticky bottom-0 flex items-center justify-between gap-4 border-t border-border bg-background/95 px-4 py-3 backdrop-blur sm:px-6">
@@ -198,6 +288,58 @@ export default function AssignPage() {
           </div>
           <SheetFooter>
             <Button onClick={() => setActiveUnit(null)} className="w-full">
+              Done
+            </Button>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
+      <Sheet open={activeDiscountId !== null} onOpenChange={(open) => !open && setActiveDiscountId(null)}>
+        <SheetContent side="bottom" className="rounded-t-2xl border-border">
+          <SheetHeader>
+            <SheetTitle>{activeDiscount ? activeDiscount.label || "Discount" : ""} applies to</SheetTitle>
+            <SheetDescription className="font-mono">
+              {activeDiscount && `-${formatPeso(activeDiscount.amount)}`}
+            </SheetDescription>
+          </SheetHeader>
+          <div className="flex flex-col gap-1 px-4">
+            <label className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-2.5 hover:bg-accent">
+              <Checkbox
+                checked={activeDiscount?.appliesTo === "everyone"}
+                onCheckedChange={() => activeDiscountId && updateDiscount(activeDiscountId, { appliesTo: "everyone" })}
+              />
+              <span className="flex-1 font-medium">Everyone</span>
+            </label>
+            <div className="my-1 border-t border-border" />
+            {split.people.map((person) => {
+              const checked =
+                activeDiscount !== null &&
+                activeDiscount.appliesTo !== "everyone" &&
+                activeDiscount.appliesTo.includes(person.id);
+              return (
+                <label
+                  key={person.id}
+                  className="flex cursor-pointer items-center gap-3 rounded-md px-2 py-2.5 hover:bg-accent"
+                >
+                  <Checkbox
+                    checked={checked}
+                    onCheckedChange={() => {
+                      if (!activeDiscountId || !activeDiscount) return;
+                      const current = activeDiscount.appliesTo === "everyone" ? [] : activeDiscount.appliesTo;
+                      const next = current.includes(person.id)
+                        ? current.filter((id) => id !== person.id)
+                        : [...current, person.id];
+                      updateDiscount(activeDiscountId, { appliesTo: next });
+                    }}
+                  />
+                  <PersonAvatar person={person} size="sm" />
+                  <span className="flex-1 font-medium">{person.name}</span>
+                </label>
+              );
+            })}
+          </div>
+          <SheetFooter>
+            <Button onClick={() => setActiveDiscountId(null)} className="w-full">
               Done
             </Button>
           </SheetFooter>

@@ -1,5 +1,5 @@
 import { roundCentavos } from "@/lib/money";
-import type { Assignments, Item, Split, Unit } from "@/lib/types";
+import type { Assignments, Discount, Item, Split, Unit } from "@/lib/types";
 
 export function unitId(itemId: string, index: number): string {
   return `${itemId}:${index}`;
@@ -59,6 +59,33 @@ export function chargeShare(split: Split): number {
   return roundCentavos(split.charges.serviceCharge / split.people.length);
 }
 
+/** The Person ids a Discount deducts from — everyone at the table, or just the ones it names. */
+export function discountTargets(discount: Discount, split: Split): string[] {
+  return discount.appliesTo === "everyone" ? split.people.map((p) => p.id) : discount.appliesTo;
+}
+
+/** Each targeted person's rounded equal share of one Discount's amount. */
+export function discountShareAmount(discount: Discount, split: Split): number {
+  const targets = discountTargets(discount, split);
+  if (targets.length === 0) return 0;
+  return roundCentavos(discount.amount / targets.length);
+}
+
+/** One person's total deduction across every Discount that targets them. */
+export function personDiscountShare(split: Split, personId: string): number {
+  return roundCentavos(
+    split.discounts.reduce((sum, discount) => {
+      if (!discountTargets(discount, split).includes(personId)) return sum;
+      return sum + discountShareAmount(discount, split);
+    }, 0),
+  );
+}
+
+/** The sum of every Discount's amount, regardless of who it targets. */
+export function totalDiscount(split: Split): number {
+  return roundCentavos(split.discounts.reduce((sum, discount) => sum + discount.amount, 0));
+}
+
 export type PersonLineItem = {
   unit: Unit;
   label: string;
@@ -88,15 +115,17 @@ export function personLineItems(split: Split, personId: string): PersonLineItem[
 export type PersonBreakdown = {
   lineItems: PersonLineItem[];
   chargeShare: number;
+  discountShare: number;
   total: number;
 };
 
-/** Everything needed to render one Person's card: their line items, service-charge share, and total. */
+/** Everything needed to render one Person's card: their line items, service-charge share, discount share, and total. */
 export function personBreakdown(split: Split, personId: string): PersonBreakdown {
   const lineItems = personLineItems(split, personId);
   const charge = chargeShare(split);
+  const discount = personDiscountShare(split, personId);
   const itemsTotal = lineItems.reduce((sum, line) => sum + line.amount, 0);
-  return { lineItems, chargeShare: charge, total: roundCentavos(itemsTotal + charge) };
+  return { lineItems, chargeShare: charge, discountShare: discount, total: roundCentavos(itemsTotal + charge - discount) };
 }
 
 export function receiptSubtotal(items: Item[]): number {
@@ -104,7 +133,7 @@ export function receiptSubtotal(items: Item[]): number {
 }
 
 export function receiptGrandTotal(split: Split): number {
-  return roundCentavos(receiptSubtotal(split.items) + split.charges.serviceCharge);
+  return roundCentavos(receiptSubtotal(split.items) + split.charges.serviceCharge - totalDiscount(split));
 }
 
 export function getInitials(name: string): string {

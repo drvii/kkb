@@ -56,6 +56,12 @@ export function SplitBreakdown({
               <span className="font-mono">{formatPeso(split.charges.serviceCharge)}</span>
             </div>
           )}
+          {split.discounts.map((discount) => (
+            <div key={discount.id} className="flex justify-between text-muted-foreground">
+              <span>{discount.label || "Discount"}</span>
+              <span className="font-mono">-{formatPeso(discount.amount)}</span>
+            </div>
+          ))}
           <div className="flex justify-between border-t pt-1.5 font-bold">
             <span>Total</span>
             <span className="font-mono">{formatPeso(receiptGrandTotal(split))}</span>

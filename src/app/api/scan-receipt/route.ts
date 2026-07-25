@@ -10,9 +10,10 @@ const EXTRACTION_PROMPT = `You are reading a photo of a Philippine restaurant re
 - items: every line item, with its printed name, quantity (default 1 if not printed), and total price for that line (not unit price)
 - serviceCharge: the flat service charge amount if printed, otherwise 0
 - subtotal: the printed subtotal amount if present, otherwise 0
+- discounts: every printed discount or deduction line (e.g. "PWD Disc", "Senior Citizen Disc", "Less: Discount"), with its printed label and its amount as a positive number (do not include a minus sign). Empty array if none are printed.
 
 All amounts are in Philippine pesos — return plain numbers with no currency symbol or thousands separators.
-If the image is not a receipt, or the text is unreadable, return items as an empty array and 0 for serviceCharge and subtotal.`;
+If the image is not a receipt, or the text is unreadable, return items and discounts as empty arrays and 0 for serviceCharge and subtotal.`;
 
 const RESPONSE_SCHEMA = {
   type: "OBJECT",
@@ -31,8 +32,19 @@ const RESPONSE_SCHEMA = {
     },
     serviceCharge: { type: "NUMBER" },
     subtotal: { type: "NUMBER" },
+    discounts: {
+      type: "ARRAY",
+      items: {
+        type: "OBJECT",
+        properties: {
+          label: { type: "STRING" },
+          amount: { type: "NUMBER" },
+        },
+        required: ["label", "amount"],
+      },
+    },
   },
-  required: ["items", "serviceCharge", "subtotal"],
+  required: ["items", "serviceCharge", "subtotal", "discounts"],
 };
 
 // Best-effort, in-memory only — resets on cold start. Defense-in-depth behind

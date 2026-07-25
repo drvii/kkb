@@ -4,10 +4,16 @@ export type ScannedItem = {
   totalPrice: number;
 };
 
+export type ScannedDiscount = {
+  label: string;
+  amount: number;
+};
+
 export type ScanReceiptResult = {
   items: ScannedItem[];
   serviceCharge: number;
   subtotal: number;
+  discounts: ScannedDiscount[];
 };
 
 export const SCAN_PASSCODE_HEADER = "x-scan-passcode";
@@ -19,7 +25,8 @@ export function isScanReceiptResult(value: unknown): value is ScanReceiptResult 
   const v = value as Record<string, unknown>;
   if (typeof v.serviceCharge !== "number" || typeof v.subtotal !== "number") return false;
   if (!Array.isArray(v.items)) return false;
-  return v.items.every(
+  if (!Array.isArray(v.discounts)) return false;
+  const itemsValid = v.items.every(
     (item) =>
       typeof item === "object" &&
       item !== null &&
@@ -27,4 +34,12 @@ export function isScanReceiptResult(value: unknown): value is ScanReceiptResult 
       typeof (item as Record<string, unknown>).quantity === "number" &&
       typeof (item as Record<string, unknown>).totalPrice === "number",
   );
+  const discountsValid = v.discounts.every(
+    (discount) =>
+      typeof discount === "object" &&
+      discount !== null &&
+      typeof (discount as Record<string, unknown>).label === "string" &&
+      typeof (discount as Record<string, unknown>).amount === "number",
+  );
+  return itemsValid && discountsValid;
 }

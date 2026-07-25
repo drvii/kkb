@@ -24,6 +24,7 @@ export function ScanReceiptControl() {
   const split = useDraftSplit((s) => s.split);
   const addItem = useDraftSplit((s) => s.addItem);
   const setCharges = useDraftSplit((s) => s.setCharges);
+  const addDiscount = useDraftSplit((s) => s.addDiscount);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [passcodeDialogOpen, setPasscodeDialogOpen] = useState(false);
@@ -102,6 +103,11 @@ export function ScanReceiptControl() {
     if (result.serviceCharge > 0 && split.charges.serviceCharge === 0) {
       setCharges({ serviceCharge: result.serviceCharge });
     }
+    for (const discount of result.discounts) {
+      if (discount.amount > 0) {
+        addDiscount({ label: discount.label, amount: discount.amount, appliesTo: "everyone" });
+      }
+    }
 
     const expectedSubtotal = roundCentavos(
       [...split.items, ...result.items].reduce((sum, item) => sum + item.totalPrice, 0),
@@ -126,7 +132,7 @@ export function ScanReceiptControl() {
         onChange={handleFileChange}
       />
 
-      <Button variant="outline" onClick={handleScanClick} disabled={scanning}>
+      <Button variant="outline" className="min-w-[9.5rem]" onClick={handleScanClick} disabled={scanning}>
         <ScanLine className="size-4" />
         {scanning ? "Scanning…" : "Scan receipt"}
       </Button>

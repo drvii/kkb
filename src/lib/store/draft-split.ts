@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Item, Person, Split } from "@/lib/types";
+import type { Discount, Item, Person, Split } from "@/lib/types";
 import { colorForIndex, getInitials, itemIdFromUnitId, unitsForItem } from "@/lib/split-math";
 import { renameSplit, togglePersonPaid } from "@/lib/split-entity";
 
@@ -17,6 +17,7 @@ function emptySplit(): Split {
     people: [],
     assignments: {},
     charges: { serviceCharge: 0 },
+    discounts: [],
   };
 }
 
@@ -29,6 +30,10 @@ type DraftSplitState = {
   updateItem: (id: string, patch: Partial<Omit<Item, "id">>) => void;
   removeItem: (id: string) => void;
   setCharges: (charges: Partial<Split["charges"]>) => void;
+  addDiscount: (discount?: Omit<Discount, "id">) => void;
+  updateDiscount: (id: string, patch: Partial<Omit<Discount, "id">>) => void;
+  removeDiscount: (id: string) => void;
+  clearReceipt: () => void;
   addPerson: (name: string) => void;
   removePerson: (id: string) => void;
   toggleUnitPerson: (unitId: string, personId: string) => void;
@@ -52,6 +57,7 @@ export const useDraftSplit = create<DraftSplitState>()(
             people: source.people.map((person) => ({ ...person, paid: false })),
             assignments: {},
             charges: { ...source.charges },
+            discounts: source.discounts.map((discount) => ({ ...discount })),
           },
         }),
 
@@ -103,6 +109,46 @@ export const useDraftSplit = create<DraftSplitState>()(
           split: { ...state.split, charges: { ...state.split.charges, ...charges } },
         })),
 
+      addDiscount: (discount) =>
+        set((state) => ({
+          split: {
+            ...state.split,
+            discounts: [
+              ...state.split.discounts,
+              { id: crypto.randomUUID(), label: "", amount: 0, appliesTo: "everyone", ...discount },
+            ],
+          },
+        })),
+
+      updateDiscount: (id, patch) =>
+        set((state) => ({
+          split: {
+            ...state.split,
+            discounts: state.split.discounts.map((discount) =>
+              discount.id === id ? { ...discount, ...patch } : discount,
+            ),
+          },
+        })),
+
+      removeDiscount: (id) =>
+        set((state) => ({
+          split: {
+            ...state.split,
+            discounts: state.split.discounts.filter((discount) => discount.id !== id),
+          },
+        })),
+
+      clearReceipt: () =>
+        set((state) => ({
+          split: {
+            ...state.split,
+            items: [],
+            assignments: {},
+            charges: { serviceCharge: 0 },
+            discounts: [],
+          },
+        })),
+
       addPerson: (name) =>
         set((state) => {
           const person: Person = {
@@ -147,6 +193,14 @@ export const useDraftSplit = create<DraftSplitState>()(
       togglePaid: (personId) => set((state) => ({ split: togglePersonPaid(state.split, personId) })),
 
     }),
-    { name: "kkb.draft-split", skipHydration: true },
+    {
+      name: "kkb.draft-split",
+      skipHydration: true,
+      version: 1,
+      migrate: (persisted) => {
+        const state = persisted as DraftSplitState;
+        return { ...state, split: { ...state.split, discounts: state.split.discounts ?? [] } };
+      },
+    },
   ),
 );
