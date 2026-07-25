@@ -40,8 +40,7 @@ export default function HomePage() {
             ))}
           </p>
           <p className="max-w-[34ch] text-balance text-muted-foreground">
-            Split any restaurant bill fairly — enter the receipt, assign what everyone had, and see exactly who owes
-            what.
+            The bill, split exactly the way it was ordered.
           </p>
         </div>
 
