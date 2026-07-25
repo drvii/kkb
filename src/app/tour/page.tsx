@@ -55,7 +55,7 @@ export default function TourPage() {
         </Button>
       </div>
 
-      <main ref={storyboardRef} className="flex flex-1 flex-col gap-8 px-4 pb-16 sm:px-6">
+      <main ref={storyboardRef} className="flex flex-1 flex-col gap-8 px-4 pt-6 pb-16 sm:px-6">
         <StepFrame step={1} title="Add everyone at the table" caption="No accounts, no invites — just names.">
           <PeopleStep />
         </StepFrame>

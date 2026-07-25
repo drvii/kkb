@@ -22,7 +22,7 @@ export function StepFrame({
         inert
         aria-hidden
         style={{ zoom: 0.62, width: 358 }}
-        className="select-none self-start overflow-hidden rounded-2xl border border-border bg-background shadow-[0_16px_40px_-24px_oklch(20%_0.02_260_/_0.35)]"
+        className="select-none self-start overflow-hidden rounded-2xl border border-border bg-background shadow-[0_16px_40px_-24px_oklch(20%_0.02_260_/_0.35)] [&_[data-slot=table-container]]:overflow-hidden"
       >
         {children}
       </div>
