@@ -2,12 +2,12 @@
 
 A bill-splitting app for group receipts — enter or scan a receipt, assign items (even shared ones) to people, and get an exact per-person total with service charge and discounts factored in.
 
-Next.js
-React
-TypeScript
-Tailwind CSS
-Zustand
-Gemini API
+![Next.js](https://img.shields.io/badge/Next.js-000000?logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-433E38?logo=react&logoColor=white)
+![Gemini API](https://img.shields.io/badge/Gemini_API-8E75B2?logo=googlegemini&logoColor=white)
 
 **[Live demo →](https://kkb-drvii.vercel.app/)**
 
