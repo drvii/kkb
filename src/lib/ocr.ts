@@ -12,6 +12,7 @@ export type ScannedDiscount = {
 export type ScanReceiptResult = {
   items: ScannedItem[];
   serviceCharge: number;
+  deliveryFee: number;
   subtotal: number;
   discounts: ScannedDiscount[];
 };
@@ -24,6 +25,7 @@ export function isScanReceiptResult(value: unknown): value is ScanReceiptResult 
   if (typeof value !== "object" || value === null) return false;
   const v = value as Record<string, unknown>;
   if (typeof v.serviceCharge !== "number" || typeof v.subtotal !== "number") return false;
+  if (typeof v.deliveryFee !== "number") return false;
   if (!Array.isArray(v.items)) return false;
   if (!Array.isArray(v.discounts)) return false;
   const itemsValid = v.items.every(

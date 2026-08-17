@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ScanLine } from "lucide-react";
+import { Loader2Icon, ScanLine } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -104,9 +104,12 @@ export function ScanReceiptControl() {
     for (const item of result.items) {
       addItem(item);
     }
-    // Only fill in the service charge if it isn't already set — never clobber a manual entry.
+    // Only fill in a charge if it isn't already set — never clobber a manual entry.
     if (result.serviceCharge > 0 && split.charges.serviceCharge === 0) {
       setCharges({ serviceCharge: result.serviceCharge });
+    }
+    if (result.deliveryFee > 0 && split.charges.deliveryFee === 0) {
+      setCharges({ deliveryFee: result.deliveryFee });
     }
     for (const discount of result.discounts) {
       if (discount.amount > 0) {
@@ -138,8 +141,20 @@ export function ScanReceiptControl() {
 
       <Button variant="outline" className="min-w-[9.5rem]" onClick={handleScanClick} disabled={scanning}>
         <ScanLine className="size-4" />
-        {scanning ? "Scanning…" : "Scan receipt"}
+        Scan receipt
       </Button>
+
+      <Dialog open={scanning}>
+        <DialogContent showCloseButton={false} className="text-center">
+          <div className="flex flex-col items-center gap-3 py-4">
+            <Loader2Icon className="size-8 animate-spin text-primary" />
+            <div>
+              <DialogTitle>Scanning receipt…</DialogTitle>
+              <DialogDescription>Reading items, charges, and discounts from the photo.</DialogDescription>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={passcodeDialogOpen} onOpenChange={setPasscodeDialogOpen}>
         <DialogContent>

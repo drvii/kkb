@@ -20,8 +20,15 @@ export function PersonBreakdown({
   onToggle?: () => void;
   onTogglePaid?: () => void;
 }) {
-  const { lineItems, chargeShare: charge, discountShare: discount, total } = personBreakdown(split, person.id);
-  const hasCharges = split.charges.serviceCharge > 0;
+  const {
+    lineItems,
+    serviceChargeShare: serviceCharge,
+    deliveryFeeShare: deliveryFee,
+    discountShare: discount,
+    total,
+  } = personBreakdown(split, person.id);
+  const hasServiceCharge = split.charges.serviceCharge > 0;
+  const hasDeliveryFee = split.charges.deliveryFee > 0;
   const paid = person.paid;
 
   return (
@@ -63,10 +70,16 @@ export function PersonBreakdown({
                 <span className="font-mono">{formatPeso(line.amount)}</span>
               </div>
             ))}
-            {hasCharges && (
+            {hasServiceCharge && (
               <div className="flex justify-between text-muted-foreground">
                 <span>Service charge (equal share)</span>
-                <span className="font-mono">{formatPeso(charge)}</span>
+                <span className="font-mono">{formatPeso(serviceCharge)}</span>
+              </div>
+            )}
+            {hasDeliveryFee && (
+              <div className="flex justify-between text-muted-foreground">
+                <span>Delivery fee (equal share)</span>
+                <span className="font-mono">{formatPeso(deliveryFee)}</span>
               </div>
             )}
             {discount > 0 && (

@@ -161,7 +161,9 @@ export default function AssignPage() {
                       <button
                         type="button"
                         aria-label={`Edit who shares ${unitLabel(unit)}`}
+                        disabled={activePersonId !== null}
                         onClick={() => setActiveUnit(unit)}
+                        className={cn(activePersonId !== null && "pointer-events-none opacity-30")}
                       >
                         {assignedPeople.length > 0 ? (
                           <div className="flex -space-x-1.5">
@@ -221,7 +223,9 @@ export default function AssignPage() {
                           <button
                             type="button"
                             aria-label={`Edit who ${discount.label || "this discount"} applies to`}
+                            disabled={activePersonId !== null}
                             onClick={() => setActiveDiscountId(discount.id)}
+                            className={cn(activePersonId !== null && "pointer-events-none opacity-30")}
                           >
                             {isEveryone ? (
                               <span className="text-[10px] whitespace-nowrap text-muted-foreground">Everyone</span>

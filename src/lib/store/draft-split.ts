@@ -16,7 +16,7 @@ function emptySplit(): Split {
     items: [],
     people: [],
     assignments: {},
-    charges: { serviceCharge: 0 },
+    charges: { serviceCharge: 0, deliveryFee: 0 },
     discounts: [],
   };
 }
@@ -144,7 +144,7 @@ export const useDraftSplit = create<DraftSplitState>()(
             ...state.split,
             items: [],
             assignments: {},
-            charges: { serviceCharge: 0 },
+            charges: { serviceCharge: 0, deliveryFee: 0 },
             discounts: [],
           },
         })),
@@ -196,10 +196,17 @@ export const useDraftSplit = create<DraftSplitState>()(
     {
       name: "kkb.draft-split",
       skipHydration: true,
-      version: 1,
+      version: 2,
       migrate: (persisted) => {
         const state = persisted as DraftSplitState;
-        return { ...state, split: { ...state.split, discounts: state.split.discounts ?? [] } };
+        return {
+          ...state,
+          split: {
+            ...state.split,
+            discounts: state.split.discounts ?? [],
+            charges: { serviceCharge: 0, deliveryFee: 0, ...(state.split.charges as Partial<Split["charges"]>) },
+          },
+        };
       },
     },
   ),

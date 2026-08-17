@@ -67,6 +67,14 @@ export function ReceiptStep() {
                   {formatPeso(split.charges.serviceCharge)}
                 </TableCell>
               </TableRow>
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={2} className="text-muted-foreground">
+                  Delivery fee
+                </TableCell>
+                <TableCell className="text-right font-mono text-xs">
+                  {formatPeso(split.charges.deliveryFee)}
+                </TableCell>
+              </TableRow>
               {split.discounts.map((discount) => (
                 <TableRow key={discount.id} className="hover:bg-transparent">
                   <TableCell colSpan={2} className="text-muted-foreground">

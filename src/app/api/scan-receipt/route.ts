@@ -6,14 +6,15 @@ export const runtime = "nodejs";
 const GEMINI_MODEL = "gemini-3.5-flash-lite";
 const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
-const EXTRACTION_PROMPT = `You are reading a photo of a Philippine restaurant receipt. Extract:
+const EXTRACTION_PROMPT = `You are reading a photo of a Philippine restaurant or food-delivery (e.g. Grab, foodpanda) receipt. Extract:
 - items: every line item, with its printed name, quantity (default 1 if not printed), and total price for that line (not unit price)
 - serviceCharge: the flat service charge amount if printed, otherwise 0
+- deliveryFee: the flat delivery or rider fee amount if printed (e.g. "Delivery Fee", "Rider Fee"), otherwise 0
 - subtotal: the printed subtotal amount if present, otherwise 0
 - discounts: every printed discount or deduction line (e.g. "PWD Disc", "Senior Citizen Disc", "Less: Discount"), with its printed label and its amount as a positive number (do not include a minus sign). Empty array if none are printed.
 
 All amounts are in Philippine pesos — return plain numbers with no currency symbol or thousands separators.
-If the image is not a receipt, or the text is unreadable, return items and discounts as empty arrays and 0 for serviceCharge and subtotal.`;
+If the image is not a receipt, or the text is unreadable, return items and discounts as empty arrays and 0 for serviceCharge, deliveryFee, and subtotal.`;
 
 const RESPONSE_SCHEMA = {
   type: "OBJECT",
@@ -31,6 +32,7 @@ const RESPONSE_SCHEMA = {
       },
     },
     serviceCharge: { type: "NUMBER" },
+    deliveryFee: { type: "NUMBER" },
     subtotal: { type: "NUMBER" },
     discounts: {
       type: "ARRAY",
@@ -44,7 +46,7 @@ const RESPONSE_SCHEMA = {
       },
     },
   },
-  required: ["items", "serviceCharge", "subtotal", "discounts"],
+  required: ["items", "serviceCharge", "deliveryFee", "subtotal", "discounts"],
 };
 
 // Best-effort, in-memory only — resets on cold start. Defense-in-depth behind

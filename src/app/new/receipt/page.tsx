@@ -115,7 +115,10 @@ export default function ReceiptPage() {
 
   const canContinue = split.items.length > 0;
   const hasReceiptContent =
-    split.items.length > 0 || split.charges.serviceCharge > 0 || split.discounts.length > 0;
+    split.items.length > 0 ||
+    split.charges.serviceCharge > 0 ||
+    split.charges.deliveryFee > 0 ||
+    split.discounts.length > 0;
 
   return (
     <AppShell>
@@ -277,6 +280,37 @@ export default function ReceiptPage() {
                   />
                 </TableCell>
               </TableRow>
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={2} className="text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    Delivery fee
+                    <Tooltip>
+                      <TooltipTrigger
+                        aria-label="About delivery fee"
+                        className="inline-flex items-center rounded-sm p-0 text-muted-foreground/70 outline-none hover:text-foreground focus-visible:ring-1 focus-visible:ring-ring"
+                      >
+                        <Info className="size-3.5" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Delivery fee is split equally across everyone at the table, regardless of what they
+                        ordered.
+                      </TooltipContent>
+                    </Tooltip>
+                  </span>
+                </TableCell>
+                <TableCell colSpan={2} className="p-1">
+                  <Input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="0.00"
+                    aria-label="Delivery fee"
+                    value={split.charges.deliveryFee || ""}
+                    onChange={(e) => setCharges({ deliveryFee: Number(e.target.value) || 0 })}
+                    className={`${cellInput} text-right font-mono`}
+                  />
+                </TableCell>
+              </TableRow>
 
               {split.discounts.map((discount) => (
                 <TableRow key={discount.id} className="hover:bg-transparent">
@@ -353,8 +387,8 @@ export default function ReceiptPage() {
               <AlertDialogHeader>
                 <AlertDialogTitle>Clear receipt?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  This removes every item, the service charge, and all discounts from this receipt. This
-                  can&apos;t be undone.
+                  This removes every item, the service charge, the delivery fee, and all discounts from this
+                  receipt. This can&apos;t be undone.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

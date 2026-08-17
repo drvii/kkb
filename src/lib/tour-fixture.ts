@@ -36,7 +36,7 @@ export const TOUR_SPLIT: Split = {
     [unitId(ITEM_TEA.id, 1)]: [bea.id],
     [unitId(ITEM_TEA.id, 2)]: [caloy.id],
   },
-  charges: { serviceCharge: 50 },
+  charges: { serviceCharge: 50, deliveryFee: 0 },
   discounts: [{ id: "tour-discount", label: "Senior/PWD", amount: 46, appliesTo: [caloy.id] }],
 };
 

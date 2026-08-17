@@ -41,10 +41,17 @@ export const useHistoryStore = create<HistoryState>()(
     {
       name: "kkb.history",
       skipHydration: true,
-      version: 1,
+      version: 2,
       migrate: (persisted) => {
         const state = persisted as HistoryState;
-        return { ...state, splits: state.splits.map((s) => ({ ...s, discounts: s.discounts ?? [] })) };
+        return {
+          ...state,
+          splits: state.splits.map((s) => ({
+            ...s,
+            discounts: s.discounts ?? [],
+            charges: { serviceCharge: 0, deliveryFee: 0, ...(s.charges as Partial<Split["charges"]>) },
+          })),
+        };
       },
     },
   ),

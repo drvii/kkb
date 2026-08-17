@@ -15,6 +15,7 @@ export type Person = {
 
 export type ReceiptCharges = {
   serviceCharge: number;
+  deliveryFee: number;
 };
 
 /** "everyone" splits equally across the whole table; a string[] names the specific Person ids it splits across. */

@@ -54,9 +54,15 @@ export function unitShares(unit: Unit, assignments: Assignments): Record<string,
 }
 
 /** Each person's rounded equal share of the service charge. */
-export function chargeShare(split: Split): number {
+export function serviceChargeShare(split: Split): number {
   if (split.people.length === 0) return 0;
   return roundCentavos(split.charges.serviceCharge / split.people.length);
+}
+
+/** Each person's rounded equal share of the delivery fee. */
+export function deliveryFeeShare(split: Split): number {
+  if (split.people.length === 0) return 0;
+  return roundCentavos(split.charges.deliveryFee / split.people.length);
 }
 
 /** The Person ids a Discount deducts from — everyone at the table, or just the ones it names. */
@@ -114,18 +120,26 @@ export function personLineItems(split: Split, personId: string): PersonLineItem[
 
 export type PersonBreakdown = {
   lineItems: PersonLineItem[];
-  chargeShare: number;
+  serviceChargeShare: number;
+  deliveryFeeShare: number;
   discountShare: number;
   total: number;
 };
 
-/** Everything needed to render one Person's card: their line items, service-charge share, discount share, and total. */
+/** Everything needed to render one Person's card: their line items, charge shares, discount share, and total. */
 export function personBreakdown(split: Split, personId: string): PersonBreakdown {
   const lineItems = personLineItems(split, personId);
-  const charge = chargeShare(split);
+  const service = serviceChargeShare(split);
+  const delivery = deliveryFeeShare(split);
   const discount = personDiscountShare(split, personId);
   const itemsTotal = lineItems.reduce((sum, line) => sum + line.amount, 0);
-  return { lineItems, chargeShare: charge, discountShare: discount, total: roundCentavos(itemsTotal + charge - discount) };
+  return {
+    lineItems,
+    serviceChargeShare: service,
+    deliveryFeeShare: delivery,
+    discountShare: discount,
+    total: roundCentavos(itemsTotal + service + delivery - discount),
+  };
 }
 
 export function receiptSubtotal(items: Item[]): number {
@@ -133,7 +147,9 @@ export function receiptSubtotal(items: Item[]): number {
 }
 
 export function receiptGrandTotal(split: Split): number {
-  return roundCentavos(receiptSubtotal(split.items) + split.charges.serviceCharge - totalDiscount(split));
+  return roundCentavos(
+    receiptSubtotal(split.items) + split.charges.serviceCharge + split.charges.deliveryFee - totalDiscount(split),
+  );
 }
 
 export function getInitials(name: string): string {

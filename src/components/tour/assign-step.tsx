@@ -62,17 +62,19 @@ export function AssignStep() {
                       {formatPeso(unitPrice(unit.item))}
                     </TableCell>
                     <TableCell>
-                      {assignedPeople.length > 0 ? (
-                        <div className="flex -space-x-1.5">
-                          {assignedPeople.map((p) => (
-                            <PersonAvatar key={p.id} person={p} size="xs" className="ring-2 ring-background" />
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="flex size-6 items-center justify-center rounded-full border border-dashed border-primary/40 text-primary">
-                          <Plus className="size-3" />
-                        </span>
-                      )}
+                      <div className="opacity-30">
+                        {assignedPeople.length > 0 ? (
+                          <div className="flex -space-x-1.5">
+                            {assignedPeople.map((p) => (
+                              <PersonAvatar key={p.id} person={p} size="xs" className="ring-2 ring-background" />
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="flex size-6 items-center justify-center rounded-full border border-dashed border-primary/40 text-primary">
+                            <Plus className="size-3" />
+                          </span>
+                        )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 );
@@ -97,7 +99,7 @@ export function AssignStep() {
                           -{formatPeso(discount.amount)}
                         </TableCell>
                         <TableCell className="w-16">
-                          <div className="flex -space-x-1.5">
+                          <div className="flex -space-x-1.5 opacity-30">
                             {targetedPeople.map((p) => (
                               <PersonAvatar key={p.id} person={p} size="xs" className="ring-2 ring-background" />
                             ))}
